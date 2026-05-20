@@ -2,7 +2,7 @@
 
 Connect [Claude](https://claude.ai) to [PostNext](https://postnext.io) via the
 Model Context Protocol. Schedule posts, draft threads, audit your queue, and
-generate content across X, Instagram, LinkedIn, Threads, YouTube, and TikTok —
+generate content across X, Instagram, LinkedIn, Threads, and TikTok —
 all from inside a Claude conversation.
 
 The MCP server is hosted and free to connect. You only need a PostNext account.
@@ -100,10 +100,11 @@ Claude: [invokes the audit-queue prompt, flags duplicates and gaps]
 | **Brand** | `update_brand_profile` |
 | **Meta** | `search_tools` |
 
-Read-only tools work on every plan, including Free. Mutating tools (create,
-schedule, channel-connect, brand-profile update) consume your monthly quota
-— Free defaults to 0 AI calls and 0 scheduled posts; Basic and above unlock
-generous limits. See [postnext.io/pricing](https://postnext.io/pricing).
+Most read-only tools work on every plan. A couple of analytics-flavored
+reads (`get_account_health`, `get_best_time_to_post`) need a paid plan.
+Mutating tools (create, schedule, channel-connect, draft-edit,
+brand-profile update) require a paid plan with available quota. See
+[postnext.io/pricing](https://postnext.io/pricing) for current limits.
 
 ## Resources
 
@@ -144,16 +145,39 @@ versioned; non-breaking additions (new tools, resources) ship without a bump.
   or **API key** (`Bearer apikey_<uuid>`, manage at
   [postnext.io/account/api-keys](https://postnext.io/account/api-keys))
 - Tokens are revocable at any time from your account dashboard
-- Each tool call is rate-limited (300 req / 2 min per token, 60 req / 2 min
-  per IP pre-auth)
+- Tool calls are rate-limited per token and per IP; live limits are
+  exposed in `RateLimit-*` response headers
 - Security disclosure: [postnext.io/security](https://postnext.io/security) ·
   RFC 9116 `security.txt` published at `/.well-known/security.txt`
-- Privacy: [postnext.io/privacy](https://postnext.io/privacy) — MCP-specific
-  data flow disclosure under the "MCP" section
+- Privacy: [postnext.io/privacy](https://postnext.io/privacy) — MCP data
+  flow detailed under "MCP Server and AI Assistant Access"
+
+## Recipes
+
+Worked examples for common workflows. Each is a paste-ready prompt with
+notes on what Claude does under the hood.
+
+- [Weekly content plan](recipes/weekly-content-plan.md) — plan a week of
+  posts across your connected channels, grounded in your brand voice
+- [Draft a thread from an article](recipes/thread-from-article.md) — turn
+  a URL into a 5–10 post thread in your voice
+- [Audit the scheduled queue](recipes/audit-scheduled-queue.md) — read-only
+  walk through your next N days, flagging duplicates / overload / gaps
+- [Channel-connection sweep](recipes/channel-connection-sweep.md) — review
+  coverage against your brand strategy, connect the missing ones
 
 ## Documentation
 
-Full reference docs live at [postnext.io/mcp/docs](https://postnext.io/mcp/docs).
+Full hosted reference at [postnext.io/mcp/docs](https://postnext.io/mcp/docs).
+Repo-local reference (handy for offline / fork use):
+
+- [Quickstart](docs/quickstart.md) — connect from Claude Desktop, claude.ai,
+  or a programmatic client
+- [Tool reference](docs/tools.md) — all 21 tools, gating, error envelopes
+- [Resource reference](docs/resources.md) — the 4 MCP resources Claude reads
+  on demand, with example payloads
+- [Prompt reference](docs/prompts.md) — the 4 named workflows + argument
+  schemas
 
 ## License
 

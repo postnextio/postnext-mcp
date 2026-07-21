@@ -1,13 +1,14 @@
 # Tool reference
 
-The PostNext MCP server exposes 21 tools. Gating splits across four
+The PostNext MCP server exposes 27 tools. Gating splits across four
 classes:
 
 - **Read-only, free** — usable on every plan. Most reads fit here.
 - **Read-only, paid** — `get_account_health` and `get_best_time_to_post`.
   Both return `UpgradeRequiredError` to Free callers.
 - **Mutating, paid + quota** — `create_post_draft`, `schedule_post`,
-  `connect_channel`, `update_post_draft`, `update_brand_profile`.
+  `connect_channel`, `update_post_draft`, `update_brand_profile`,
+  `create_blog_plan`, `upload_asset`, `request_asset_upload`.
 - **Mutating, no cost** — `cancel_scheduled_post`, `delete_draft`,
   `set_current_team`. Cleanup and navigation; available on every plan.
 
@@ -172,6 +173,51 @@ Read-only. Search and filter the available MCP tool catalog by
 free-text query, category, or intent. Useful when you have many MCP
 servers connected and want to narrow Claude's tool consideration to
 PostNext-specific actions.
+
+## Media
+
+### `upload_asset`
+
+Mutating. Inline base64 upload of an image or video to your asset
+library; returns a URL for `create_post_draft.mediaUrls`. Reliable only
+for very small files (~8KB); larger base64 truncates in tool args, so
+prefer `request_asset_upload`. Server cap 5MB, subject to your plan's
+storage limit.
+
+### `request_asset_upload`
+
+Mutating. Recommended upload path for images and videos of any size.
+Returns a pre-signed `uploadUrl` plus token; you PUT the bytes and the
+response carries the final asset URL for `mediaUrls`, with no follow-up
+MCP call. Allowed types: JPEG, PNG, WebP, GIF, MP4, WebM. Per-request
+cap 50MB, on top of your plan's storage. Pre-charges storage quota,
+refunded automatically if you never complete the PUT.
+
+## Blog planner
+
+### `get_latest_blog_post`
+
+Read-only, free. Reports whether the team is connected to a WordPress
+blog and returns a snippet of the most recent post.
+
+### `list_blog_plans`
+
+Read-only, free. Lists the team's blog plans (the "Post Planner"),
+newest first, with status, per-status topic counts, and
+credit-reservation info. Optional status filter.
+
+### `create_blog_plan`
+
+Mutating. Paid feature (Basic+); consumes credits. Creates a blog
+content plan for a brand profile. Topics generate asynchronously, so it
+returns immediately in status `generating`. Poll `list_blog_plans` for
+progress.
+
+### `test_blog_connection`
+
+Mutating (updates integration health). Tests connectivity to the team's
+connected WordPress blog (the PostNext plugin) and returns reachability,
+token validity, plugin version, and capabilities.
 
 ## Tool annotations
 

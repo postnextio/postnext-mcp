@@ -11,6 +11,12 @@ The MCP server is hosted and free to connect. You only need a PostNext account.
 - **Status**: production, [v1.5.1](#versioning)
 - **Tools**: 21 · **Resources**: 4 · **Prompts**: 4
 
+> **Prefer a portable, no-connector setup?** The
+> [`postnext-social-manager`](https://github.com/postnextio/postnext-social-manager)
+> skill drives the same PostNext account over the public REST API with an API
+> key. Works in Claude Code, scripts, or any agent, with no MCP connector to
+> configure.
+
 ---
 
 ## What is this?
@@ -192,6 +198,7 @@ The MCP server itself is hosted by PostNext; see
 - MCP landing: [postnext.io/mcp](https://postnext.io/mcp)
 - Account dashboard: [app.postnext.io](https://app.postnext.io)
 - API keys: [postnext.io/account/api-keys](https://postnext.io/account/api-keys)
+- Social-manager skill: [github.com/postnextio/postnext-social-manager](https://github.com/postnextio/postnext-social-manager)
 - Support: [contact@postnext.io](mailto:contact@postnext.io)
 
 ---

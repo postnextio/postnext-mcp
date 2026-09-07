@@ -1,9 +1,10 @@
 # PostNext MCP
 
-Connect [Claude](https://claude.ai) to [PostNext](https://postnext.io) via the
-Model Context Protocol. Schedule posts, draft threads, audit your queue, and
-generate content across X, Instagram, LinkedIn, Threads, and TikTok —
-all from inside a Claude conversation.
+Connect [Claude](https://claude.ai), Claude Code, Cursor, Codex or any other
+MCP-aware client to [PostNext](https://postnext.io) via the Model Context
+Protocol. Schedule posts, draft threads, audit your queue, and generate
+content across X, Instagram, LinkedIn, Threads, and TikTok, all from inside a
+chat, your editor, or your terminal.
 
 The MCP server is hosted and free to connect. You only need a PostNext account.
 
@@ -38,8 +39,14 @@ PostNext sees what you authorize, nothing more.
 ## Quick start
 
 You need a PostNext account. Sign up free at
-[postnext.io](https://postnext.io) — no API key required for the Claude
+[postnext.io](https://postnext.io) — no API key required for the connector
 flows below; OAuth handles auth.
+
+> Client setup steps are dated, not evergreen. The steps below were last
+> checked against each vendor's own documentation on **2026-09-06**, and they
+> match the per-client pages at [postnext.io/mcp](https://postnext.io/mcp).
+> Vendor menus move. If a path here is wrong, the site pages are the ones kept
+> current.
 
 ### Claude Desktop (one-click)
 
@@ -66,10 +73,52 @@ docs](https://modelcontextprotocol.io/quickstart/user)) and add:
 Restart Claude Desktop. On first tool use, Claude opens a browser tab for
 the OAuth grant; once approved, the PostNext tools appear in the tools picker.
 
+### Claude Code
+
+Register PostNext as an HTTP MCP server once, from a terminal:
+
+```bash
+claude mcp add --transport http postnext https://mcp.postnext.io/api
+```
+
+It is available in every Claude Code session from then on. The first PostNext
+tool call opens the OAuth grant in a browser; approve it once.
+
 ### Claude.ai (web)
 
 Go to [claude.ai](https://claude.ai) → Connectors → Add custom connector and
 paste `https://mcp.postnext.io/api`. OAuth flow handles auth.
+
+### Cursor
+
+Open Settings → MCP and add a global server, or edit `~/.cursor/mcp.json`
+directly (the per-project file is `.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "postnext": {
+      "url": "https://mcp.postnext.io/api"
+    }
+  }
+}
+```
+
+Save, approve the sign-in on first use, and the tools are available to the
+agent in any chat.
+
+### Codex
+
+Codex reads MCP servers from `config.toml` in your `.codex` folder. Add:
+
+```toml
+[mcp_servers.postnext]
+url = "https://mcp.postnext.io/api"
+```
+
+Codex picks the HTTP transport automatically when an entry has a `url` instead
+of a `command`. On an older Codex that only reads stdio servers, also set
+`experimental_use_rmcp_client = true` under `[features]`, or upgrade.
 
 ### Programmatic clients (API key)
 

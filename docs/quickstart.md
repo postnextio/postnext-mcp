@@ -9,8 +9,16 @@ draft threads, and audit your queue from inside a Claude conversation.
 - A PostNext account — sign up free at [postnext.io](https://postnext.io)
 - One of:
   - **Claude Desktop** (Mac, Windows) — for the one-click flow
+  - **Claude Code** — one CLI line, no config file
   - **claude.ai** web — for the custom-connector flow
+  - **Cursor** or **Codex** — one entry in their MCP config
   - Any other MCP-aware client — for programmatic use with an API key
+
+> Client setup steps are dated, not evergreen. The steps below were last
+> checked against each vendor's own documentation on **2026-09-06**, and they
+> match the per-client pages at [postnext.io/mcp](https://postnext.io/mcp).
+> Vendor menus move. If a path here is wrong, the site pages are the ones kept
+> current.
 
 ## Option A — Claude Desktop, one-click
 
@@ -56,7 +64,22 @@ under the same `mcpServers` object.
 
 Restart Claude Desktop. Same OAuth grant on first tool use.
 
-## Option C — claude.ai (web)
+## Option C — Claude Code
+
+Register PostNext as an HTTP MCP server from a terminal:
+
+```bash
+claude mcp add --transport http postnext https://mcp.postnext.io/api
+```
+
+That is the whole setup. There is no config file to edit, and the server is
+available in every Claude Code session from then on. The first time Claude
+calls a PostNext tool it opens the OAuth grant in your browser; approve it
+once.
+
+Check it registered with `claude mcp list`.
+
+## Option D — claude.ai (web)
 
 1. Open [claude.ai](https://claude.ai)
 2. Click your profile menu → **Connectors**
@@ -66,7 +89,46 @@ Restart Claude Desktop. Same OAuth grant on first tool use.
 
 PostNext tools become available across all your Claude.ai conversations.
 
-## Option D — Programmatic / non-Claude clients
+## Option E — Cursor
+
+1. In Cursor, open **Settings** → **MCP** and add a new global server.
+   Depending on your Cursor version that opens either a form or the config
+   file. The global file is `~/.cursor/mcp.json`; a per-project one is
+   `.cursor/mcp.json`.
+2. Add the `postnext` entry and save:
+
+```json
+{
+  "mcpServers": {
+    "postnext": {
+      "url": "https://mcp.postnext.io/api"
+    }
+  }
+}
+```
+
+3. Cursor opens the PostNext sign-in screen on first use. Approve it once, and
+   the tools are available to the agent in any chat.
+
+## Option F — Codex
+
+1. Codex reads MCP servers from `config.toml` in your `.codex` folder. Open
+   it, or create it if it does not exist.
+2. Paste the block below:
+
+```toml
+[mcp_servers.postnext]
+url = "https://mcp.postnext.io/api"
+```
+
+Codex picks the HTTP transport automatically when an entry has a `url`
+instead of a `command`. On an older Codex that only reads stdio servers, also
+set `experimental_use_rmcp_client = true` under `[features]`, or upgrade.
+
+3. Start Codex. The first PostNext tool call opens the sign-in screen in your
+   browser; approve it once and the token is kept for 30 days.
+
+## Option G — Programmatic / non-Claude clients
 
 For your own scripts, agents, or non-Claude MCP clients that don't do OAuth:
 

@@ -1,0 +1,45 @@
+{
+  "name": "postnext-mcp",
+  "version": "0.1.0",
+  "description": "Setup helper for the PostNext MCP server: prints the connection config for Claude Code, Claude Desktop, Cursor, Codex and ChatGPT.",
+  "bin": {
+    "postnext-mcp": "bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "docs",
+    "recipes",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "postnext",
+    "claude",
+    "claude-code",
+    "cursor",
+    "codex",
+    "ai-agent",
+    "social-media",
+    "social-media-scheduling",
+    "cli"
+  ],
+  "homepage": "https://postnext.io/mcp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/postnextio/postnext-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/postnextio/postnext-mcp/issues"
+  },
+  "author": "PostNext <contact@postnext.io>",
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

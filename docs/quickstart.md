@@ -201,7 +201,7 @@ Claude will use [tools](tools.md), [resources](resources.md), and
 
 ## What's next
 
-- [Tool reference](tools.md) — all 33 tools, what they do, what they
+- [Tool reference](tools.md) — all 34 tools, what they do, what they
   return
 - [Resource reference](resources.md) — read-on-demand context Claude
   pulls automatically

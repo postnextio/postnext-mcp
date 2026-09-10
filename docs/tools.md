@@ -1,6 +1,6 @@
 # Tool reference
 
-The PostNext MCP server exposes 33 tools. Gating splits across four
+The PostNext MCP server exposes 34 tools. Gating splits across four
 classes:
 
 - **Read-only, free** — usable on every plan. Most reads fit here.
@@ -157,6 +157,18 @@ Read-only, **paid plan required**. Returns engagement-weighted
 the user's own historical post performance. Falls back to post-frequency
 analysis when engagement data is sparse. Supports `twitter`, `instagram`,
 `linkedin`, `threads`, `tiktok`.
+
+### `get_channel_analytics`
+
+Read-only, free. Aggregate performance for one connected channel, or for
+every channel at once. Returns impressions, reach, likes, comments and
+engagement rate for the period, the change against the preceding period
+of the same length, and the follower series. Omit `platform` for a
+team-wide total; pass `platform` (plus `channelName` when that platform
+has more than one account connected) to scope it. `period` is `7d`,
+`30d`, `90d` or `all`, defaulting to `30d`. With several accounts on one
+platform and no `channelName` it errors rather than picking one, so a
+number is never silently attributed to the wrong account.
 
 ## Brand
 

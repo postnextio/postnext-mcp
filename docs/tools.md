@@ -1,6 +1,6 @@
 # Tool reference
 
-The PostNext MCP server exposes 27 tools. Gating splits across four
+The PostNext MCP server exposes 33 tools. Gating splits across four
 classes:
 
 - **Read-only, free** — usable on every plan. Most reads fit here.
@@ -10,7 +10,10 @@ classes:
   `connect_channel`, `update_post_draft`, `update_brand_profile`,
   `create_blog_plan`, `upload_asset`, `request_asset_upload`.
 - **Mutating, no cost** — `cancel_scheduled_post`, `delete_draft`,
-  `set_current_team`. Cleanup and navigation; available on every plan.
+  `set_current_team`, and the three bio-page block writers
+  (`add_mini_site_block`, `update_mini_site_block`,
+  `remove_mini_site_block`), which additionally require a subscription
+  that is not lapsed. Cleanup, navigation and page edits.
 
 See [postnext.io/pricing](https://postnext.io/pricing) for current limits
 per plan.
@@ -218,6 +221,51 @@ progress.
 Mutating (updates integration health). Tests connectivity to the team's
 connected WordPress blog (the PostNext plugin) and returns reachability,
 token validity, plugin version, and capabilities.
+
+## Bio pages (mini sites)
+
+### `list_mini_sites`
+
+Read-only, free. Lists the bio pages belonging to the selected team with
+their public URL, publish state and setup progress. Start here: every
+other bio-page tool takes the `siteId` this returns, and can omit it when
+the team has exactly one site.
+
+### `get_mini_site`
+
+Read-only, free. Reads one page in full: profile header, social icons,
+every content block, SEO metadata, theme and auto-pin settings. Long text
+is truncated to a 300-character preview. Never returns email-sync
+credentials.
+
+### `get_mini_site_analytics`
+
+Read-only, free. Views, clicks, best-performing links, visitor source,
+device and country, and AI-crawler reads, plus which published posts
+drove clicks. Every figure except the attribution rows is an all-time
+counter rather than a windowed one. `attributionDays` (1-90, default 30)
+sets the attribution window only.
+
+### `add_mini_site_block`
+
+Mutating, no credit cost; requires a healthy subscription. Adds one block:
+`link`, `featured`, `product`, `event`, `presave`, podcast `episode`,
+`booking`, opening `hours`, `header`, `text`, `image` or `gallery`.
+Required fields differ by type. Changes a publicly visible page
+immediately.
+
+### `update_mini_site_block`
+
+Mutating, no credit cost; requires a healthy subscription. Patches one
+block by `blockId`. Only the fields you pass change, and the block type
+cannot be changed. The response returns the block as stored, so a value
+the server rejected is visible rather than silent.
+
+### `remove_mini_site_block`
+
+Mutating, no credit cost; requires a healthy subscription. Removes one
+block by `blockId` — call `get_mini_site` first for the id. Changes a
+publicly visible page immediately.
 
 ## Tool annotations
 

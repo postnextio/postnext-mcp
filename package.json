@@ -1,6 +1,6 @@
 {
   "name": "postnext-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Setup helper for the PostNext MCP server: prints the connection config for Claude Code, Claude Desktop, Cursor, Codex and ChatGPT.",
   "scripts": {
     "test": "node test/tool-consistency.test.js"

@@ -2,25 +2,29 @@
 
 Connect [Claude](https://claude.ai) to your [PostNext](https://postnext.io)
 account in 60 seconds. After this guide you'll be able to schedule posts,
-draft threads, and audit your queue from inside a Claude conversation.
+draft posts, and audit your queue from inside a Claude conversation.
 
 ## Prerequisites
 
-- A PostNext account — sign up free at [postnext.io](https://postnext.io)
+- A PostNext account. Sign up free at [postnext.io](https://postnext.io)
 - One of:
-  - **Claude Desktop** (Mac, Windows) — for the one-click flow
-  - **Claude Code** — one CLI line, no config file
-  - **claude.ai** web — for the custom-connector flow
-  - **Cursor** or **Codex** — one entry in their MCP config
-  - Any other MCP-aware client — for programmatic use with an API key
+  - **Claude Desktop** (Mac, Windows): one-click link, or add it as a connector
+  - **Claude Code**: one CLI line, no config file
+  - **claude.ai** web: add it as a custom connector
+  - **Cursor** or **Codex**: one entry in their MCP config
+  - **ChatGPT**: a custom app in Developer mode
+  - Any other MCP-aware client: for programmatic use with an API key
 
 > Client setup steps are dated, not evergreen. The steps below were last
-> checked against each vendor's own documentation on **2026-09-06**, and they
-> match the per-client pages at [postnext.io/mcp](https://postnext.io/mcp).
-> Vendor menus move. If a path here is wrong, the site pages are the ones kept
-> current.
+> checked against each vendor's own documentation on **2026-10-06**. Vendor
+> menus move. The per-client pages at [postnext.io/mcp](https://postnext.io/mcp)
+> are the ones kept current.
 
-## Option A — Claude Desktop, one-click
+`npx postnext-mcp <client>` prints the same config for `claude-code`,
+`claude-desktop`, `cursor`, `codex` and `chatgpt`. It is a setup helper only;
+the server is hosted, so there is nothing to run locally.
+
+## Option A: Claude Desktop, one-click
 
 1. Visit [postnext.io/mcp/connect](https://postnext.io/mcp/connect)
 2. Click **Open in Claude Desktop**
@@ -28,43 +32,28 @@ draft threads, and audit your queue from inside a Claude conversation.
 4. On first tool use, a browser tab opens for the OAuth grant. Approve.
 5. PostNext tools appear in Claude's tool picker.
 
-This is the fastest path. The deep link is `claude://mcp/connect?url=…` —
-nothing to copy or paste.
+The deep link is `claude://mcp/connect?url=…`, so there is nothing to copy or
+paste.
 
-## Option B — Claude Desktop, manual
+## Option B: Claude Desktop, add as a connector
 
-If the deep link doesn't work (some Linux distros, older Claude Desktop
-versions), edit your Claude Desktop config file directly.
+PostNext is a remote MCP server, so it is added as a **custom connector**, not
+in `claude_desktop_config.json`. That file only starts local servers, and a
+`url` entry there does not connect.
 
-**Config file paths:**
+1. In Claude (desktop or [claude.ai](https://claude.ai)), go to
+   **Customize** → **Connectors**
+2. Click **+ Add**, then **Add custom connector**
+3. Name it `PostNext` and paste `https://mcp.postnext.io/api`, then
+   **Continue**
+4. Keep OAuth as the sign-in method and click **Add**
+5. Approve the PostNext sign-in when Claude asks for it
 
-| OS | Path |
-|---|---|
-| macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
-| Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
+On a Team or Enterprise plan, an owner adds the connector once under
+**Organization settings** → **Connectors**, and each member then clicks
+**Connect** under **Customize** → **Connectors**.
 
-(Claude Desktop is officially Mac + Windows. Linux users on community builds
-should consult the project that packages their version.)
-
-Add the `postnext` entry under `mcpServers`:
-
-```json
-{
-  "mcpServers": {
-    "postnext": {
-      "url": "https://mcp.postnext.io/api",
-      "transport": "http"
-    }
-  }
-}
-```
-
-If you already have other MCP servers configured, merge — keep them all
-under the same `mcpServers` object.
-
-Restart Claude Desktop. Same OAuth grant on first tool use.
-
-## Option C — Claude Code
+## Option C: Claude Code
 
 Register PostNext as an HTTP MCP server from a terminal:
 
@@ -79,17 +68,13 @@ once.
 
 Check it registered with `claude mcp list`.
 
-## Option D — claude.ai (web)
+## Option D: claude.ai (web)
 
-1. Open [claude.ai](https://claude.ai)
-2. Click your profile menu → **Connectors**
-3. Click **Add custom connector**
-4. Paste `https://mcp.postnext.io/api`
-5. Click **Connect** → approve the OAuth grant
+Same steps as Option B: **Customize** → **Connectors** → **+ Add** →
+**Add custom connector**, paste `https://mcp.postnext.io/api`, and approve the
+sign-in. The connector is then available in your Claude conversations.
 
-PostNext tools become available across all your Claude.ai conversations.
-
-## Option E — Cursor
+## Option E: Cursor
 
 1. In Cursor, open **Settings** → **MCP** and add a new global server.
    Depending on your Cursor version that opens either a form or the config
@@ -110,7 +95,7 @@ PostNext tools become available across all your Claude.ai conversations.
 3. Cursor opens the PostNext sign-in screen on first use. Approve it once, and
    the tools are available to the agent in any chat.
 
-## Option F — Codex
+## Option F: Codex
 
 1. Codex reads MCP servers from `config.toml` in your `.codex` folder. Open
    it, or create it if it does not exist.
@@ -128,7 +113,14 @@ set `experimental_use_rmcp_client = true` under `[features]`, or upgrade.
 3. Start Codex. The first PostNext tool call opens the sign-in screen in your
    browser; approve it once and the token is kept for 30 days.
 
-## Option G — Programmatic / non-Claude clients
+## Option G: ChatGPT
+
+Turn on **Developer mode** in ChatGPT's Apps settings, create a new app with
+the URL `https://mcp.postnext.io/api`, and choose **OAuth** as the
+authentication. ChatGPT then lists the PostNext tools and asks you to sign in.
+`npx postnext-mcp chatgpt` prints the current menu path.
+
+## Option H: Programmatic / non-Claude clients
 
 For your own scripts, agents, or non-Claude MCP clients that don't do OAuth:
 
@@ -152,46 +144,51 @@ Audit my queue. Flag anything off.
 ```
 
 ```
-Draft a thread about <topic> in my brand voice.
+Draft a post about <topic> in my brand voice.
 ```
 
 ```
-Plan a week of posts across all my channels.
+Plan next week's posts across all my channels.
 ```
 
 Claude will use [tools](tools.md), [resources](resources.md), and
-[prompts](prompts.md) as needed — you don't have to know which.
+[prompts](prompts.md) as needed. You don't have to know which.
 
 ## Troubleshooting
 
 ### "PostNext tools don't appear in Claude"
 
-- Restart Claude Desktop fully (quit + reopen, not just close the window)
-- Check the config file syntax — invalid JSON silently disables the
-  server. Run `cat ~/Library/Application\ Support/Claude/claude_desktop_config.json | jq .`
-  on macOS to validate
-- Look at Claude Desktop's MCP logs: in Claude → Settings → Developer →
-  View MCP logs
+- Check **Customize** → **Connectors**: PostNext should be listed and
+  connected. If it shows a **Connect** button, click it and approve the
+  sign-in
+- If you added a `postnext` entry to `claude_desktop_config.json`, remove it.
+  That file is for local servers only; use the connector instead
+- Restart Claude Desktop fully (quit and reopen, not just close the window)
 
 ### "Authorization failed" or 401 errors
 
-- Your OAuth grant may have expired. Disconnect + reconnect from
-  claude.ai → Connectors, or restart Claude Desktop and re-approve
+- Your OAuth grant may have expired (tokens last 30 days). Disconnect and
+  reconnect PostNext under **Customize** → **Connectors**
 - If using an API key directly, verify it starts with `apikey_` and
   isn't revoked at
   [postnext.io/account/api-keys](https://postnext.io/account/api-keys)
 
 ### "Rate limit exceeded"
 
-- The server rate-limits per token and per IP. Limits are exposed in
-  the `RateLimit-*` response headers — slow your calls down or wait
-  for the window to reset
+- Signed-in calls are limited to 300 per 2 minutes per token; calls before
+  sign-in to 60 per 2 minutes per IP. A limited call gets HTTP 429, and the
+  `RateLimit-*` response headers say when the window resets
 
 ### "Upgrade required" / "Limit exceeded"
 
-- Mutating tools require a paid plan with available quota. The error
-  envelope includes an `upgradeUrl` plus a `freeAlternative` hint
-  (often pointing you at a read-only equivalent). See
+- The Free plan includes 10 posts, 10 AI credits, 1 connected channel and
+  10 MB of storage a month. Creating, scheduling and uploading work on Free
+  until those run out
+- Six tools need a paid plan: `get_account_health`, `get_best_time_to_post`,
+  `update_post_draft`, `update_brand_profile`, `create_blog_plan` and
+  `test_blog_connection`
+- The error includes an `upgradeUrl` and a `freeAlternative` hint (often a
+  read-only tool that still works). See
   [postnext.io/pricing](https://postnext.io/pricing) for plan limits
 
 ### "Resource not found" on `postnext://...`
@@ -201,11 +198,11 @@ Claude will use [tools](tools.md), [resources](resources.md), and
 
 ## What's next
 
-- [Tool reference](tools.md) — all 34 tools, what they do, what they
+- [Tool reference](tools.md): all 34 tools, what they do, what they
   return
-- [Resource reference](resources.md) — read-on-demand context Claude
+- [Resource reference](resources.md): read-on-demand context Claude
   pulls automatically
-- [Prompt reference](prompts.md) — named multi-step workflows you can
+- [Prompt reference](prompts.md): named multi-step workflows you can
   invoke directly
-- [Recipes](../recipes) — full worked examples for common tasks
+- [Recipes](../recipes): full worked examples for common tasks
 - [Full docs at postnext.io/mcp/docs](https://postnext.io/mcp/docs)

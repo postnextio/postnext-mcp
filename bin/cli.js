@@ -18,10 +18,11 @@ var CLIENTS = {
     note: 'Available in every session from then on. Check it with: claude mcp list'
   },
   'claude-desktop': {
-    title: 'Claude Desktop',
-    how: 'Add to your claude_desktop_config.json under "mcpServers", then restart:',
-    body: JSON.stringify({ mcpServers: { postnext: { url: URL, transport: 'http' } } }, null, 2),
-    note: 'Or use the one-click deep link at https://postnext.io/mcp/connect'
+    title: 'Claude Desktop / claude.ai',
+    how: 'Customize > Connectors > + Add > Add custom connector, keep OAuth, and paste:',
+    body: URL,
+    note: 'Or use the one-click deep link at https://postnext.io/mcp/connect\n' +
+      'Do not put it in claude_desktop_config.json: that file only starts local servers.'
   },
   cursor: {
     title: 'Cursor',
@@ -59,7 +60,7 @@ function usage() {
     console.log('  npx postnext-mcp ' + (k + '              ').slice(0, 15) + ' ' + CLIENTS[k].title);
   });
   console.log('\n  npx postnext-mcp --url     print just the server URL');
-  console.log('  npx postnext-mcp --json    print the mcpServers block\n');
+  console.log('  npx postnext-mcp --json    print the mcpServers block (Cursor and other url-based clients)\n');
   console.log('You need a PostNext account (free): https://postnext.io');
   console.log('Docs: https://postnext.io/mcp  |  https://github.com/postnextio/postnext-mcp\n');
   console.log('This package is a setup helper. The MCP server itself is hosted;');
@@ -71,7 +72,7 @@ var arg = (process.argv[2] || '').replace(/^--/, '').toLowerCase();
 if (arg === 'url') {
   console.log(URL);
 } else if (arg === 'json') {
-  console.log(JSON.stringify({ mcpServers: { postnext: { url: URL, transport: 'http' } } }, null, 2));
+  console.log(JSON.stringify({ mcpServers: { postnext: { url: URL } } }, null, 2));
 } else if (arg === 'version' || arg === 'v') {
   console.log(require('../package.json').version);
 } else if (CLIENTS[arg]) {

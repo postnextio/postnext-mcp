@@ -1,7 +1,7 @@
 # Resource reference
 
 MCP resources are read-on-demand context. Unlike tools, resources don't
-take parameters — they're fixed URIs the client (Claude) reads when it
+take parameters: they're fixed URIs the client (Claude) reads when it
 needs the data. Each PostNext resource is scoped to the authenticated
 user's currently-selected team.
 
@@ -9,9 +9,9 @@ PostNext exposes 4 resources, all read-only and free to read on every plan.
 
 | URI | Title | What it returns |
 |---|---|---|
-| `postnext://account/summary` | Account summary | Plan, usage this month, channels connected |
-| `postnext://teams/current` | Current team | Active team for this token |
-| `postnext://channels/connected` | Connected channels | Social handles connected to the active team |
+| `postnext://account/summary` | Account summary | Plan, AI credits, draft/scheduled/channel counts |
+| `postnext://teams/current` | Active team | Active team for this token |
+| `postnext://channels/connected` | Connected social channels | Social accounts connected to the active team |
 | `postnext://brand-profiles/active` | Active brand profile | Voice, themes, hashtags |
 
 ---
@@ -19,26 +19,28 @@ PostNext exposes 4 resources, all read-only and free to read on every plan.
 ## `postnext://account/summary`
 
 High-level snapshot of the user's PostNext account. Claude reads this when
-asked anything plan-related ("what plan am I on", "how many credits left",
-"can I connect another channel"). Avoids a separate `get_plan_limits` call
-for read-only inspection.
+asked anything plan-related ("what plan am I on", "how many credits
+left"). For full quota numbers (channel slots, storage, posting allowed)
+call `get_plan_limits`.
 
-**Example payload** (numbers vary by plan — see
-[postnext.io/pricing](https://postnext.io/pricing)):
+`plan` is the effective tier, so an account whose subscription has lapsed
+reports the tier it is actually gated to, with `gated: true`. Draft and
+scheduled counts are capped at 100 each.
+
+**Example payload**:
 
 ```json
 {
+  "email": "you@example.com",
+  "user": "yourusername",
   "plan": "pro",
-  "tier": "PRO",
+  "gated": false,
   "subscriptionStatus": "active",
-  "usage": {
-    "aiCalls":   { "used": 47,  "limit": "<plan limit>" },
-    "posts":     { "used": 92,  "limit": "<plan limit>" },
-    "channels":  { "used": 5,   "limit": "<plan limit>" },
-    "storageMB": { "used": 1240,"limit": "<plan limit>" }
-  },
-  "channelsConnected": 5,
-  "billingPeriodEnd": "2026-06-12T00:00:00Z"
+  "connectedChannels": 5,
+  "draftsCount": 12,
+  "scheduledPostsCount": 8,
+  "aiCreditsUsedThisMonth": 47,
+  "aiCreditsLimit": 150
 }
 ```
 
@@ -46,29 +48,28 @@ for read-only inspection.
 
 The team the current token is scoped to. PostNext supports multi-team
 accounts (one user can belong to several teams), and the token carries a
-`currentTeamId` that determines which team mutating tools target.
+`currentTeamId` that determines which team tools target.
 
 **Example payload**:
 
 ```json
 {
-  "teamId": "team_a3f8d15c-6a4f-4...",
+  "teamId": "a3f8d15c-6a4f-4...",
   "teamName": "Acme Marketing",
-  "teamRole": "admin",
-  "memberCount": 4,
-  "createdAt": "2025-01-14T09:22:00Z"
+  "totalTeamsAvailable": 2
 }
 ```
 
-Switch teams with the `set_current_team` tool — the token then remembers
-the choice across conversations.
+Switch teams with the `set_current_team` tool. With OAuth the choice
+persists across conversations; with an API key it lasts for the session.
 
 ## `postnext://channels/connected`
 
-Every social handle connected to the active team. Each entry includes
-the platform, the handle, an internal accountId (used by mutating tools
-that need to target a specific account when the user has multiples on
-the same platform), and a per-token health signal.
+Every social account connected to the active team. A read-only mirror of
+the `list_connected_accounts` tool. Each entry has the platform, the
+handle, a `providerId` (stable across handle renames; pass it to tools
+that target a specific account), whether the connection is active, and
+when it last synced.
 
 **Example payload**:
 
@@ -78,49 +79,49 @@ the same platform), and a per-token health signal.
     {
       "platform": "twitter",
       "handle": "@yourhandle",
-      "accountId": "soc_84f1...",
-      "status": "healthy",
-      "tokenExpiresAt": "2026-06-15T10:00:00Z"
+      "providerId": "1234567890",
+      "connected": true,
+      "lastSyncAt": "2026-10-05T10:00:00.000Z"
     },
     {
       "platform": "instagram",
       "handle": "yourhandle",
-      "accountId": "soc_91d2...",
-      "status": "token_expiring",
-      "tokenExpiresAt": "2026-05-22T08:00:00Z"
+      "providerId": "17841400000000000",
+      "connected": false,
+      "lastSyncAt": "2026-09-20T08:00:00.000Z"
     }
-  ],
-  "totalCount": 2
+  ]
 }
 ```
 
-`status` values: `healthy`, `token_expiring` (refresh inside 7 days),
-`token_expired` (re-auth required).
+`connected: false` means the connection is inactive and needs to be
+re-authorized.
 
 ## `postnext://brand-profiles/active`
 
-The team's active brand profile — the source of truth Claude uses to
+The team's active brand profile: the source of truth Claude uses to
 ground generated content in your voice. Resolution: the team's default
 profile first; if none flagged default, the team's alphabetically-first
 active profile.
 
-Returns a curated subset of fields — only what the LLM actually needs to
-generate on-brand content. Internal fields (settings, folderId, raw
-scraper output) are omitted.
+Returns a curated subset of fields (`id`, `bio`, `expertiseAreas`,
+`personalityTraits`, `brandVoice`, `mainThemes`, `audienceSize`,
+`preferredHashtags`), only what the LLM needs to generate on-brand
+content. Fields that are not set are left out.
 
 **Example payload**:
 
 ```json
 {
   "active": {
-    "id": "bp_65eb479d-fd4e-...",
-    "bio": "Operator + founder, building five SaaS brands. AI-native social media tools.",
-    "expertiseAreas": ["AI tooling", "social media", "MCP"],
-    "personalityTraits": ["direct", "curious", "no-BS"],
-    "brandVoice": "concise, technical, dry humor",
-    "mainThemes": ["MCP launches", "founder economics", "AI agents"],
-    "audienceSize": { "twitter": 12000, "linkedin": 3500 },
-    "preferredHashtags": ["#mcp", "#postnext", "#aiagents"]
+    "id": "65eb479dfd4e...",
+    "bio": "Independent coffee roaster shipping single-origin beans across Europe.",
+    "expertiseAreas": ["specialty coffee", "home brewing", "sourcing"],
+    "personalityTraits": ["warm", "knowledgeable", "plain-spoken"],
+    "brandVoice": ["friendly", "practical", "no jargon"],
+    "mainThemes": ["new harvests", "brew guides", "farm stories"],
+    "audienceSize": { "instagram": 12000, "linkedin": 3500 },
+    "preferredHashtags": ["#specialtycoffee", "#coffeeroaster", "#brewguide"]
   }
 }
 ```
@@ -134,24 +135,21 @@ If the team has no brand profile yet:
 }
 ```
 
-Create or update profiles at
-[app.postnext.io/brand-profiles](https://app.postnext.io/brand-profiles).
+Create profiles in the PostNext web app. Claude can patch the active one
+with the `update_brand_profile` tool (paid plans).
 
 ---
 
 ## When Claude reads these
 
-Resources fire automatically inside named prompts (see [prompts.md](prompts.md))
-or when Claude judges them helpful. You can also explicitly invoke:
+Claude reads resources when it judges them helpful. You can also
+explicitly invoke one:
 
 > Read `postnext://brand-profiles/active` and summarize what you find.
 
-Claude will dispatch an MCP `resources/read` against the URI. Resources
-are cached per conversation — re-asking for the same URI in the same
-session reuses the prior fetch.
+Claude will dispatch an MCP `resources/read` against the URI.
 
 ## Full reference
 
-Live JSON Schema for each resource is exposed via MCP's
-`resources/list` from the server. Reference docs at
-[postnext.io/mcp/docs](https://postnext.io/mcp/docs).
+The resource list is exposed via MCP's `resources/list` from the server.
+Reference docs at [postnext.io/mcp/docs](https://postnext.io/mcp/docs).

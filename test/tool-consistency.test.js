@@ -90,5 +90,22 @@ if (!fs.existsSync(indexTs)) {
     }
 }
 
+// ---- setup instructions that must not come back ------------------------------
+// Claude Desktop's claude_desktop_config.json only starts LOCAL servers; a
+// remote {url, transport:"http"} entry there never connects. The README,
+// quickstart and the npx helper all shipped that snippet until 2026-10-06.
+// Em dashes are banned in this repo's copy for the same reason the counts are
+// checked: they crept back in after every edit.
+const copyFiles = ['README.md', 'bin/cli.js',
+    ...fs.readdirSync(path.join(root, 'docs')).filter((f) => f.endsWith('.md')).map((f) => 'docs/' + f),
+    ...fs.readdirSync(path.join(root, 'recipes')).filter((f) => f.endsWith('.md')).map((f) => 'recipes/' + f)];
+for (const f of copyFiles) {
+    const body = read(f);
+    if (/transport["']?\s*:\s*["']http["']/.test(body)) fail(f + ' tells users to put a remote server in a JSON config with transport "http"');
+    const dashes = (body.match(/\u2014/g) || []).length;
+    if (dashes) fail(f + ' has ' + dashes + ' em dash(es)');
+}
+pass('setup snippets and em dashes checked in ' + copyFiles.length + ' files');
+
 if (failures) { console.error(failures + ' failure(s)'); process.exit(1); }
 console.log('tool-consistency: OK (' + N + ' tools)');

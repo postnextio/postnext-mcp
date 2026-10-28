@@ -247,7 +247,8 @@ tool declares `openai/fileParams`); the server downloads it once over
 HTTPS, checks from the bytes that it is an image or video, and stores
 it. Up to 10 files per call, 50MB each, subject to your plan's storage.
 Returns the saved files plus a `failed` list naming any file that could
-not be saved and why. Other clients upload with `request_asset_upload`.
+not be saved and why; if none could be saved, the call returns the first
+file's error instead. Other clients upload with `request_asset_upload`.
 
 ## Blog planner
 
@@ -346,7 +347,7 @@ Gate and input errors come back as `result.isError: true` with a
 | `error` value | When it fires | Extra fields |
 |---|---|---|
 | `upgrade_required` | Tool is paid-only and caller is on Free, or the subscription has lapsed (past_due / unpaid / incomplete) | `tool`, `freeAlternative` |
-| `limit_exceeded` | Quota would be exceeded, or the account must start its trial before it can schedule | `tool`, `kind` (`ai_credits`, `ai_credits_daily`, `posts`, `channels`, `storage`, `trial_required`), `limit`, `current`, `freeAlternative` |
+| `limit_exceeded` | Quota would be exceeded, or the account has not yet chosen a plan in the PostNext web app and so cannot schedule | `tool`, `kind` (`ai_credits`, `ai_credits_daily`, `posts`, `channels`, `storage`, `trial_required`), `limit`, `current`, `freeAlternative` |
 | `insufficient_scope` | Token lacks the scope the tool needs | `tool`, `requiredScope` (`mcp:read` or `mcp:write`) |
 | `channel_resolution_failed` | The target account can't be resolved | `tool`, `kind` (`no_channel`, `ambiguous_channel`, `channel_not_connected`), `platform`, `availableHandles`, `requestedChannelName` |
 | `upload_input_invalid` | Bad upload input, or a chat attachment that could not be downloaded | `tool`, `kind` (`too_large`, `invalid_base64`, `empty_payload`, `unsupported_media`, `download_failed`), `sizeBytes`, `maxBytes` (when known) |

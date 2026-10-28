@@ -10,8 +10,8 @@ classes:
   `create_blog_plan` (which also uses AI credits) and
   `test_blog_connection`. All return `upgrade_required` on Free.
 - **Mutating, quota-gated** (available on Free within its limits):
-  `create_post_draft` (1 AI credit), `schedule_post` (your plan must allow
-  posting), `connect_channel` (needs a free channel slot), `upload_asset`,
+  `create_post_draft` (1 AI credit), `schedule_post` (posts per month; each post
+  counts once), `connect_channel` (needs a free channel slot), `upload_asset`,
   `request_asset_upload` and `import_chat_file` (storage quota).
 - **Mutating, no cost**: `cancel_scheduled_post`, `delete_draft`,
   `set_current_team`, and the three bio-page block writers
@@ -42,8 +42,9 @@ showing "you're on Pro" in agent replies.
 ### `get_plan_limits`
 
 Read-only. Returns the user's tier and the quota buckets with current
-usage: channels, storage (MB) and AI credits, plus `posts`, which is an
-on/off flag (`allowed`) rather than a count. Also returns the AI credits
+usage: channels, storage (MB), AI credits and posts (`limit` per month,
+`allowed`, and `current`, the posts counted this month, or null when the
+count could not be read). Also returns the AI credits
 still available, including purchased credit packs. Call this before
 mutating tools to predict whether they'll be blocked.
 
@@ -124,8 +125,10 @@ those.
 
 ### `schedule_post`
 
-Mutating. Requires a plan that allows posting (Free does). Moves a draft
-into the publish queue. Requires `postId` and `scheduledAt` (ISO 8601;
+Mutating. Counts against the plan's monthly posts (Free: 10); each post
+counts once, so rescheduling after a cancel or a failed publish is not
+counted again. At the limit it returns `limit_exceeded` with kind `posts`.
+Moves a draft into the publish queue. Requires `postId` and `scheduledAt` (ISO 8601;
 include an offset or `Z`). Optional `timezone` (IANA name), and
 `platform` plus `channelName` to queue only one platform or account of a
 multi-platform cross-post; with neither, every platform in the post is

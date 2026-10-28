@@ -1,6 +1,6 @@
 # Tool reference
 
-The PostNext MCP server exposes 34 tools. Gating splits across five
+The PostNext MCP server exposes 35 tools. Gating splits across five
 classes:
 
 - **Read-only, free**: usable on every plan. Most reads fit here.
@@ -11,8 +11,8 @@ classes:
   `test_blog_connection`. All return `upgrade_required` on Free.
 - **Mutating, quota-gated** (available on Free within its limits):
   `create_post_draft` (1 AI credit), `schedule_post` (your plan must allow
-  posting), `connect_channel` (needs a free channel slot), `upload_asset`
-  and `request_asset_upload` (storage quota).
+  posting), `connect_channel` (needs a free channel slot), `upload_asset`,
+  `request_asset_upload` and `import_chat_file` (storage quota).
 - **Mutating, no cost**: `cancel_scheduled_post`, `delete_draft`,
   `set_current_team`, and the three bio-page block writers
   (`add_mini_site_block`, `update_mini_site_block`,
@@ -36,8 +36,8 @@ see [error shapes](#error-shapes) below.
 
 Read-only. Returns the user's tier and display name, `isPaid`, `isTrial`,
 `gated` (a paid plan whose subscription has lapsed), subscription status,
-`renewsAt`, `trialEndsAt`, `cancelAtPeriodEnd`, currency and an
-`upgradeUrl`. Useful for showing "you're on Pro" in agent replies.
+`renewsAt`, `trialEndsAt`, `cancelAtPeriodEnd` and currency. Useful for
+showing "you're on Pro" in agent replies.
 
 ### `get_plan_limits`
 
@@ -239,6 +239,16 @@ MCP call. Allowed types: JPEG, PNG, WebP, GIF, MP4, WebM. Per-request
 cap 50MB, on top of your plan's storage. Pre-charges storage quota,
 refunded automatically if you never complete the PUT.
 
+### `import_chat_file`
+
+Mutating. Saves files attached in a ChatGPT chat to your asset library.
+ChatGPT hands each attachment over as a temporary download link (the
+tool declares `openai/fileParams`); the server downloads it once over
+HTTPS, checks from the bytes that it is an image or video, and stores
+it. Up to 10 files per call, 50MB each, subject to your plan's storage.
+Returns the saved files plus a `failed` list naming any file that could
+not be saved and why. Other clients upload with `request_asset_upload`.
+
 ## Blog planner
 
 ### `get_latest_blog_post`
@@ -324,9 +334,9 @@ UI affordances:
 | Annotation | What it means |
 |---|---|
 | `readOnlyHint: true` | Pure reader; never mutates state |
-| `destructiveHint: true` | Can permanently delete data (`delete_draft` and `remove_mini_site_block`) |
+| `destructiveHint: true` | Can delete or overwrite data: `delete_draft`, `update_post_draft`, `update_brand_profile`, `update_mini_site_block` and `remove_mini_site_block` |
 | `idempotentHint: true` | Same args twice = same result |
-| `openWorldHint: true` | Reaches outside PostNext (only `connect_channel`, which returns an OAuth URL) |
+| `openWorldHint: true` | Reaches outside PostNext or changes something public: `connect_channel`, `schedule_post`, `create_blog_plan`, `test_blog_connection`, `update_post_draft`, `import_chat_file` and the three bio-page block writers |
 
 ## Error shapes
 
@@ -335,11 +345,11 @@ Gate and input errors come back as `result.isError: true` with a
 
 | `error` value | When it fires | Extra fields |
 |---|---|---|
-| `upgrade_required` | Tool is paid-only and caller is on Free, or the subscription has lapsed (past_due / unpaid / incomplete) | `tool`, `upgradeUrl`, `freeAlternative` |
-| `limit_exceeded` | Quota would be exceeded | `tool`, `kind` (`ai_credits`, `ai_credits_daily`, `posts`, `channels`, `storage`), `limit`, `current`, `upgradeUrl`, `freeAlternative` |
+| `upgrade_required` | Tool is paid-only and caller is on Free, or the subscription has lapsed (past_due / unpaid / incomplete) | `tool`, `freeAlternative` |
+| `limit_exceeded` | Quota would be exceeded, or the account must start its trial before it can schedule | `tool`, `kind` (`ai_credits`, `ai_credits_daily`, `posts`, `channels`, `storage`, `trial_required`), `limit`, `current`, `freeAlternative` |
 | `insufficient_scope` | Token lacks the scope the tool needs | `tool`, `requiredScope` (`mcp:read` or `mcp:write`) |
 | `channel_resolution_failed` | The target account can't be resolved | `tool`, `kind` (`no_channel`, `ambiguous_channel`, `channel_not_connected`), `platform`, `availableHandles`, `requestedChannelName` |
-| `upload_input_invalid` | Bad `upload_asset` bytes | `tool`, `kind` (`too_large`, `invalid_base64`, `empty_payload`), `sizeBytes`, `maxBytes` |
+| `upload_input_invalid` | Bad upload input, or a chat attachment that could not be downloaded | `tool`, `kind` (`too_large`, `invalid_base64`, `empty_payload`, `unsupported_media`, `download_failed`), `sizeBytes`, `maxBytes` (when known) |
 | `mini_site_input_invalid` | Bad bio-page tool input | `tool`, `kind` (`block_dropped`, `ambiguous_site`, `site_not_found`, `block_not_found`, `max_blocks`, `collateral_drop`, `no_team`, `type_change`), `requiredFields`, `sites` |
 
 Arguments that don't match a tool's inputSchema return `isError: true`

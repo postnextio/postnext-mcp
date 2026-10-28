@@ -187,8 +187,8 @@ Claude will use [tools](tools.md), [resources](resources.md), and
 - Six tools need a paid plan: `get_account_health`, `get_best_time_to_post`,
   `update_post_draft`, `update_brand_profile`, `create_blog_plan` and
   `test_blog_connection`
-- The error includes an `upgradeUrl` and a `freeAlternative` hint (often a
-  read-only tool that still works). See
+- The error includes a `freeAlternative` hint (often a read-only tool that
+  still works). See
   [postnext.io/pricing](https://postnext.io/pricing) for plan limits
 
 ### "Resource not found" on `postnext://...`
@@ -198,7 +198,7 @@ Claude will use [tools](tools.md), [resources](resources.md), and
 
 ## What's next
 
-- [Tool reference](tools.md): all 34 tools, what they do, what they
+- [Tool reference](tools.md): all 35 tools, what they do, what they
   return
 - [Resource reference](resources.md): read-on-demand context Claude
   pulls automatically

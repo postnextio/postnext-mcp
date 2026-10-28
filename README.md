@@ -10,7 +10,7 @@ The MCP server is hosted and free to connect. You only need a PostNext account.
 
 - **Server URL**: `https://mcp.postnext.io/api`
 - **Status**: production, [v1.5.1](#versioning)
-- **Tools**: 34 · **Resources**: 4 · **Prompts**: 4
+- **Tools**: 35 · **Resources**: 4 · **Prompts**: 4
 
 > **Prefer a portable, no-connector setup?** The
 > [`postnext-social-manager`](https://github.com/postnextio/postnext-social-manager)
@@ -150,7 +150,7 @@ Claude: [invokes the audit-queue prompt, flags duplicates and gaps]
 | **Schedule** | `schedule_post`, `cancel_scheduled_post`, `list_scheduled_posts`, `get_publish_status` |
 | **Posts** | `get_post`, `search_posts`, `get_post_metrics` |
 | **Analytics** | `get_best_time_to_post`, `get_channel_analytics` |
-| **Media** | `upload_asset`, `request_asset_upload` |
+| **Media** | `upload_asset`, `request_asset_upload`, `import_chat_file` |
 | **Blog planner** | `get_latest_blog_post`, `list_blog_plans`, `create_blog_plan`, `test_blog_connection` |
 | **Bio pages** | `list_mini_sites`, `get_mini_site`, `get_mini_site_analytics`, `add_mini_site_block`, `update_mini_site_block`, `remove_mini_site_block` |
 | **Brand** | `update_brand_profile` |
@@ -232,7 +232,7 @@ Repo-local reference (handy for offline / fork use):
 
 - [Quickstart](docs/quickstart.md): connect from Claude Desktop, claude.ai,
   Claude Code, Cursor, Codex, ChatGPT or a programmatic client
-- [Tool reference](docs/tools.md): all 34 tools, gating, error envelopes
+- [Tool reference](docs/tools.md): all 35 tools, gating, error envelopes
 - [Resource reference](docs/resources.md): the 4 MCP resources Claude reads
   on demand, with example payloads
 - [Prompt reference](docs/prompts.md): the 4 named workflows and their argument

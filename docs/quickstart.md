@@ -184,9 +184,8 @@ Claude will use [tools](tools.md), [resources](resources.md), and
 - The Free plan includes 10 posts, 10 AI credits, 1 connected channel and
   10 MB of storage a month. Creating, scheduling and uploading work on Free
   until those run out
-- Six tools need a paid plan: `get_account_health`, `get_best_time_to_post`,
-  `update_post_draft`, `update_brand_profile`, `create_blog_plan` and
-  `test_blog_connection`
+- Four tools need a paid plan: `get_account_health`, `get_best_time_to_post`,
+  `update_post_draft` and `update_brand_profile`
 - The error includes a `freeAlternative` hint (often a read-only tool that
   still works). See
   [postnext.io/pricing](https://postnext.io/pricing) for plan limits
@@ -198,7 +197,7 @@ Claude will use [tools](tools.md), [resources](resources.md), and
 
 ## What's next
 
-- [Tool reference](tools.md): all 35 tools, what they do, what they
+- [Tool reference](tools.md): all 25 tools, what they do, what they
   return
 - [Resource reference](resources.md): read-on-demand context Claude
   pulls automatically

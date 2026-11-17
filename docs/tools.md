@@ -1,23 +1,19 @@
 # Tool reference
 
-The PostNext MCP server exposes 35 tools. Gating splits across five
+The PostNext MCP server exposes 25 tools. Gating splits across five
 classes:
 
 - **Read-only, free**: usable on every plan. Most reads fit here.
 - **Read-only, paid**: `get_account_health` and `get_best_time_to_post`.
   Both return `upgrade_required` to Free callers.
-- **Mutating, paid**: `update_post_draft`, `update_brand_profile`,
-  `create_blog_plan` (which also uses AI credits) and
-  `test_blog_connection`. All return `upgrade_required` on Free.
+- **Mutating, paid**: `update_post_draft` and `update_brand_profile`.
+  Both return `upgrade_required` on Free.
 - **Mutating, quota-gated** (available on Free within its limits):
   `create_post_draft` (1 AI credit), `schedule_post` (posts per month; each post
   counts once), `connect_channel` (needs a free channel slot), `upload_asset`,
   `request_asset_upload` and `import_chat_file` (storage quota).
-- **Mutating, no cost**: `cancel_scheduled_post`, `delete_draft`,
-  `set_current_team`, and the three bio-page block writers
-  (`add_mini_site_block`, `update_mini_site_block`,
-  `remove_mini_site_block`), which additionally require a subscription
-  that is not lapsed. Cleanup, navigation and page edits.
+- **Mutating, no cost**: `cancel_scheduled_post`, `delete_draft` and
+  `set_current_team`. Cleanup and navigation.
 
 The Free plan includes 10 AI credits a month, 10 posts a month, 1 channel
 and 10 MB of asset storage. Every paid or quota gate also refuses an
@@ -253,83 +249,6 @@ Returns the saved files plus a `failed` list naming any file that could
 not be saved and why; if none could be saved, the call returns the first
 file's error instead. Other clients upload with `request_asset_upload`.
 
-## Blog planner
-
-### `get_latest_blog_post`
-
-Read-only, free. Reports whether the team is connected to a WordPress
-blog and returns a snippet of the most recent post.
-
-### `list_blog_plans`
-
-Read-only, free. Lists the team's blog plans (the "Post Planner"),
-newest first, with status, per-status topic counts, and
-credit-reservation info. Optional status filter.
-
-### `create_blog_plan`
-
-Mutating. Paid feature (Basic+); consumes credits. Creates a blog
-content plan for a brand profile. Requires `startDate` (YYYY-MM-DD);
-optional `planDays` (1 to 30, default 7), `brandProfileId`,
-`integrationId`, `contentLanguage`, `timezone`, `competitorDomains` (up
-to 5) and `autoPublish`. On Business/Teams plans with a connected blog,
-generated posts publish to WordPress automatically unless you pass
-`autoPublish: false`. Topics generate asynchronously, so it returns
-immediately in status `generating`. Poll `list_blog_plans` for progress.
-
-### `test_blog_connection`
-
-Mutating (updates integration health), **paid plan required**. Tests
-connectivity to the team's connected WordPress blog (the PostNext
-plugin) and returns reachability, token validity, plugin version, and
-capabilities. Optional `integrationId` when more than one blog is
-connected.
-
-## Bio pages (mini sites)
-
-### `list_mini_sites`
-
-Read-only, free. Lists the bio pages belonging to the selected team with
-their public URL, publish state and setup progress. Start here: every
-other bio-page tool takes the `siteId` this returns, and can omit it when
-the team has exactly one site.
-
-### `get_mini_site`
-
-Read-only, free. Reads one page in full: profile header, social icons,
-every content block, SEO metadata, theme and auto-pin settings. Long text
-is truncated to a 300-character preview. Never returns email-sync
-credentials or tracking pixel IDs.
-
-### `get_mini_site_analytics`
-
-Read-only, free. Views, clicks, best-performing links, visitor source,
-device and country, and AI-crawler reads, plus which published posts
-drove clicks. Every figure except the attribution rows is an all-time
-counter rather than a windowed one. `attributionDays` (1-90, default 30)
-sets the attribution window only.
-
-### `add_mini_site_block`
-
-Mutating, no credit cost; requires a healthy subscription. Adds one block:
-`link`, `featured`, `header`, `email`, `latestposts`, `embed`, `text`,
-`image`, `gallery`, `faq`, `divider`, `product`, `event`, `presave`,
-podcast `episode`, `booking`, opening `hours` or `collection`. Required
-fields differ by type. Changes a publicly visible page immediately.
-
-### `update_mini_site_block`
-
-Mutating, no credit cost; requires a healthy subscription. Patches one
-block by `blockId`. Only the fields you pass change, and the block type
-cannot be changed. The response returns the block as stored, so a value
-the server rejected is visible rather than silent.
-
-### `remove_mini_site_block`
-
-Mutating, no credit cost; requires a healthy subscription. Removes one
-block by `blockId` (call `get_mini_site` first for the id). Changes a
-publicly visible page immediately.
-
 ## Tool annotations
 
 Every tool declares MCP `annotations` so clients can show appropriate
@@ -338,9 +257,9 @@ UI affordances:
 | Annotation | What it means |
 |---|---|
 | `readOnlyHint: true` | Pure reader; never mutates state |
-| `destructiveHint: true` | Can delete or overwrite data: `delete_draft`, `update_post_draft`, `update_brand_profile`, `update_mini_site_block` and `remove_mini_site_block` |
+| `destructiveHint: true` | Can delete or overwrite data: `delete_draft`, `update_post_draft` and `update_brand_profile` |
 | `idempotentHint: true` | Same args twice = same result |
-| `openWorldHint: true` | Reaches outside PostNext or changes something public: `connect_channel`, `schedule_post`, `create_blog_plan`, `test_blog_connection`, `update_post_draft`, `import_chat_file` and the three bio-page block writers |
+| `openWorldHint: true` | Reaches outside PostNext or changes something public: `connect_channel`, `schedule_post`, `update_post_draft` and `import_chat_file` |
 
 ## Error shapes
 
@@ -354,7 +273,6 @@ Gate and input errors come back as `result.isError: true` with a
 | `insufficient_scope` | Token lacks the scope the tool needs | `tool`, `requiredScope` (`mcp:read` or `mcp:write`) |
 | `channel_resolution_failed` | The target account can't be resolved | `tool`, `kind` (`no_channel`, `ambiguous_channel`, `channel_not_connected`), `platform`, `availableHandles`, `requestedChannelName` |
 | `upload_input_invalid` | Bad upload input, or a chat attachment that could not be downloaded | `tool`, `kind` (`too_large`, `invalid_base64`, `empty_payload`, `unsupported_media`, `download_failed`), `sizeBytes`, `maxBytes` (when known) |
-| `mini_site_input_invalid` | Bad bio-page tool input | `tool`, `kind` (`block_dropped`, `ambiguous_site`, `site_not_found`, `block_not_found`, `max_blocks`, `collateral_drop`, `no_team`, `type_change`), `requiredFields`, `sites` |
 
 Arguments that don't match a tool's inputSchema return `isError: true`
 with text only: `Input validation error: Invalid arguments for tool

@@ -65,16 +65,17 @@ Copy any of these into your assistant once PostNext is connected:
 
 Longer worked examples are in [recipes](#recipes).
 
-## Connect in one minute
+## Connect in a few minutes
 
-You need a free PostNext account: [sign up at postnext.io](https://postnext.io).
-Then pick your assistant. Each one has a full guide on postnext.io, and those
+You need a PostNext account: [sign up at postnext.io](https://postnext.io) and
+finish the plan step in the web app (a free trial, or **Continue with Free**)
+before your assistant schedules posts. Then pick your assistant. Each one has a full guide on postnext.io, and those
 guides are the ones kept current: the steps below match them as checked
 against each vendor's own documentation on 18 November 2026. Menus move.
 
 ### Claude (desktop app and claude.ai)
 
-In Claude, open **Customize** → **Connectors** → **Add** → **Add custom
+In Claude, open **Customize** → **Connectors** → **+ Add** → **Add custom
 connector**, paste `https://mcp.postnext.io/api`, keep OAuth, and approve the
 PostNext sign-in. On Team and Enterprise plans an owner adds it once under
 **Organization settings** → **Connectors**, then members click **Connect**.
@@ -88,12 +89,13 @@ Full guide: [PostNext for Claude](https://postnext.io/ai-agents/claude).
 1. In ChatGPT on the web, open **Plugins**, select **+** and choose **Add
    custom MCP server**.
 2. Name it PostNext, paste `https://mcp.postnext.io/api` under Connection and
-   choose **OAuth**.
+   choose **OAuth**. Tick **I understand and want to continue**.
 3. Select **Create as a plugin**, install it, and sign in to PostNext when
    ChatGPT asks. In a chat, type **@** and pick PostNext.
 
 OpenAI says full MCP access, with write tools, is on ChatGPT Business,
-Enterprise and Edu, and Pro can connect custom servers with read access.
+Enterprise and Edu, and Pro can connect custom servers with read access. In a
+Business workspace, an admin or owner creates the plugin.
 Full guide: [PostNext for ChatGPT](https://postnext.io/ai-agents/chatgpt).
 
 ### Claude Code
@@ -102,8 +104,8 @@ Full guide: [PostNext for ChatGPT](https://postnext.io/ai-agents/chatgpt).
 claude mcp add --transport http --scope user postnext https://mcp.postnext.io/api
 ```
 
-`--scope user` makes PostNext available in every project. The first PostNext
-tool call opens the sign-in in your browser; approve it once.
+`--scope user` makes PostNext available in every project. Then start Claude
+Code, type `/mcp`, select postnext and sign in to PostNext in your browser.
 Full guide: [PostNext for Claude Code](https://postnext.io/ai-agents/claude-code).
 
 ### Cursor
@@ -130,12 +132,12 @@ codex mcp login postnext
 ```
 
 Or add `[mcp_servers.postnext]` with `url = "https://mcp.postnext.io/api"` to
-`config.toml` in your `.codex` folder.
+`config.toml` in your `.codex` folder, then run `codex mcp login postnext`.
 Full guide: [PostNext for Codex](https://postnext.io/ai-agents/codex).
 
 ### Other assistants
 
-GitHub Copilot, Windsurf, Gemini, Manus, Perplexity and more have their own
+GitHub Copilot, Windsurf, Gemini, Manus, Perplexity Computer and more have their own
 guides in the [AI agents directory](https://postnext.io/ai-agents). Any client
 that can add a remote MCP server works with the same URL.
 
@@ -154,11 +156,11 @@ own integration? See [PostNext for developers](https://postnext.io/for/developer
 
 | Network | What your assistant can do | Guide |
 |---|---|---|
-| **X (Twitter)** | Write, schedule and check posts | [X MCP server](https://postnext.io/mcp/x) |
+| **X (Twitter)** | Write and schedule posts, read likes, replies, reposts and impressions | [X MCP server](https://postnext.io/mcp/x) |
 | **Instagram** | Write captions and schedule posts with your images and videos | [Instagram MCP server](https://postnext.io/mcp/instagram) |
-| **LinkedIn** | Write, schedule and check posts | [LinkedIn MCP server](https://postnext.io/mcp/linkedin) |
-| **Threads** | Write, schedule and check posts | [Threads MCP server](https://postnext.io/mcp/threads) |
-| **TikTok** | Write captions and schedule your videos | [TikTok MCP server](https://postnext.io/mcp/tiktok) |
+| **LinkedIn** | Write and schedule posts, confirm they went out | [LinkedIn MCP server](https://postnext.io/mcp/linkedin) |
+| **Threads** | Write and schedule posts, confirm they went out | [Threads MCP server](https://postnext.io/mcp/threads) |
+| **TikTok** | Write captions, schedule your videos, confirm they went out | [TikTok MCP server](https://postnext.io/mcp/tiktok) |
 
 These five can be connected and posted to through the MCP. The PostNext app
 itself supports more [channels](https://postnext.io/channels).
@@ -197,11 +199,12 @@ or [postnext.io/mcp/docs](https://postnext.io/mcp/docs).
 
 ## FAQ
 
-### What is a social media MCP server?
+### Is PostNext an MCP server or an API?
 
-An MCP server that connects an AI assistant to your social media accounts.
-With the PostNext social media MCP, Claude, ChatGPT or any MCP client can
-write, schedule and review your posts. [Read more](https://postnext.io/mcp).
+Both. The MCP server is for AI assistants like Claude and ChatGPT
+([postnext.io/mcp](https://postnext.io/mcp)). The REST API is for your own
+code ([postnext.io/for/developers](https://postnext.io/for/developers)).
+Both work on the same PostNext account.
 
 ### Which AI assistants work with PostNext?
 
@@ -222,8 +225,9 @@ and 10 AI credits a month, 1 channel). Four tools need a paid plan.
 
 ### Can ChatGPT post to social media with PostNext?
 
-Yes. Add PostNext as a custom MCP server from ChatGPT's Plugins page.
-OpenAI says write tools need ChatGPT Business, Enterprise or Edu.
+Yes, on ChatGPT Business, Enterprise or Edu, where OpenAI allows write
+tools: add PostNext as a custom MCP server from the Plugins page. On Pro,
+ChatGPT can connect with read access only.
 [ChatGPT setup guide](https://postnext.io/ai-agents/chatgpt).
 
 ### Will my assistant post without asking me?
@@ -235,7 +239,8 @@ PostNext calendar, where you can cancel it until it goes out.
 
 ### Do I need an API key?
 
-Not in chat apps: Claude, ChatGPT, Cursor and the others sign in with OAuth.
+Not in most chat apps and editors: Claude, ChatGPT, Cursor and Claude Code
+sign in with OAuth.
 Use an API key only for your own scripts.
 [PostNext for developers](https://postnext.io/for/developers).
 
@@ -341,5 +346,5 @@ The MCP server itself is hosted by PostNext; see
 
 ---
 
-Built by the team at [PostNext](https://postnext.io), the social media
-the agentic social media scheduler. Pull requests on these docs welcome.
+Built by the team at [PostNext](https://postnext.io), the agentic social
+media scheduler. Pull requests on these docs welcome.

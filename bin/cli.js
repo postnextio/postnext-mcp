@@ -3,10 +3,10 @@
 
 // Prints the PostNext MCP connection config for a given client.
 //
-// The snippets here are the same strings the /mcp/<client> pages on
+// The snippets here are the same strings the /ai-agents/<client> pages on
 // postnext.io render, and the same ones the README and docs/quickstart.md
 // carry. Three copies is two too many, so if one changes, change all three:
-// postnextio config/mcp-pages.js is the source its own test pins.
+// postnextio config/ai-agents.js is the source its own test pins.
 
 var URL = 'https://mcp.postnext.io/api';
 
@@ -15,7 +15,8 @@ var CLIENTS = {
     title: 'Claude Code',
     how: 'Run this once, from a terminal:',
     body: 'claude mcp add --transport http --scope user postnext ' + URL,
-    note: 'Available in every session from then on. Check it with: claude mcp list'
+    note: 'Available in every project from then on. Check it with: claude mcp list',
+    signin: 'Then start Claude Code, type /mcp, select postnext and sign in to PostNext in the browser.'
   },
   'claude-desktop': {
     title: 'Claude Desktop / claude.ai',
@@ -34,14 +35,17 @@ var CLIENTS = {
     title: 'Codex',
     how: 'Add to config.toml in your .codex folder:',
     body: '[mcp_servers.postnext]\nurl = "' + URL + '"',
-    note: 'On an older Codex that only reads stdio servers, also set\nexperimental_use_rmcp_client = true under [features], or upgrade.'
+    note: 'On an older Codex that only reads stdio servers, also set\nexperimental_use_rmcp_client = true under [features], or upgrade.',
+    signin: 'Then sign in once with: codex mcp login postnext'
   },
   chatgpt: {
     title: 'ChatGPT',
-    how: 'Plugins > + > Add custom MCP server. Name it PostNext, choose OAuth, paste this URL, then Create as a plugin and install it:',
+    how: 'Plugins > + > Add custom MCP server. Name it PostNext, paste this URL, choose OAuth, tick I understand and want to continue, then Create as a plugin and install it:',
     body: URL,
     note: 'Write tools need ChatGPT Business, Enterprise or Edu; Pro connects with read access.\n' +
-      'Current steps: https://postnext.io/ai-agents/chatgpt'
+      'In a Business workspace, an admin or owner creates the plugin.\n' +
+      'Current steps: https://postnext.io/ai-agents/chatgpt',
+    signin: 'ChatGPT asks you to sign in to PostNext when you install the plugin.'
   }
 };
 
@@ -51,7 +55,7 @@ function print(key) {
   console.log(c.how + '\n');
   console.log(c.body + '\n');
   if (c.note) console.log(c.note + '\n');
-  console.log('First tool call opens the PostNext sign-in in a browser. Approve it once.\n');
+  console.log((c.signin || 'First tool call opens the PostNext sign-in in a browser. Approve it once.') + '\n');
 }
 
 function usage() {

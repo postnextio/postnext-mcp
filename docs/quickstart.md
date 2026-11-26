@@ -15,9 +15,11 @@ draft posts, and audit your queue from inside a Claude conversation.
   - **ChatGPT**: a custom MCP server added from Plugins
   - Any other MCP-aware client: for programmatic use with an API key
 
-> Client setup steps are dated, not evergreen. The steps below were last
-> checked against each vendor's own documentation on **2026-10-06**. Vendor
-> menus move. The per-client pages at [postnext.io/mcp](https://postnext.io/mcp)
+> Client setup steps are dated, not evergreen. Most steps below were checked
+> against each vendor's own documentation on **2026-10-06**; the ChatGPT,
+> Claude Code and Codex steps were updated on **2026-11-26** to match the
+> postnext.io guides checked on 18 November 2026. Vendor menus move. The
+> per-client guides at [postnext.io/ai-agents](https://postnext.io/ai-agents)
 > are the ones kept current.
 
 `npx postnext-mcp <client>` prints the same config for `claude-code`,
@@ -61,10 +63,9 @@ Register PostNext as an HTTP MCP server from a terminal:
 claude mcp add --transport http --scope user postnext https://mcp.postnext.io/api
 ```
 
-That is the whole setup. There is no config file to edit, and the server is
-available in every Claude Code session from then on. The first time Claude
-calls a PostNext tool it opens the OAuth grant in your browser; approve it
-once.
+Then start Claude Code, type `/mcp`, select postnext and sign in to PostNext
+in your browser. That is the whole setup: there is no config file to edit, and
+`--scope user` makes the server available in every project.
 
 Check it registered with `claude mcp list`.
 
@@ -110,20 +111,21 @@ Codex picks the HTTP transport automatically when an entry has a `url`
 instead of a `command`. On an older Codex that only reads stdio servers, also
 set `experimental_use_rmcp_client = true` under `[features]`, or upgrade.
 
-3. Start Codex. The first PostNext tool call opens the sign-in screen in your
-   browser; approve it once and the token is kept for 30 days.
+3. Sign in once with `codex mcp login postnext`. It opens the PostNext
+   sign-in in your browser, and the token is kept for 30 days.
 
 ## Option G: ChatGPT
 
 1. In ChatGPT on the web, open **Plugins**, select **+** and choose **Add
    custom MCP server**.
 2. Name it PostNext, paste `https://mcp.postnext.io/api` under Connection,
-   choose **OAuth** and confirm.
+   choose **OAuth** and tick **I understand and want to continue**.
 3. Select **Create as a plugin**, install it, and sign in to PostNext when
    ChatGPT asks. In a chat, type **@** and pick PostNext.
 
 OpenAI says full MCP access, with write tools, is on ChatGPT Business,
-Enterprise and Edu; Pro can connect custom servers with read access. Older
+Enterprise and Edu; Pro can connect custom servers with read access. In a
+Business workspace, an admin or owner creates the plugin. Older
 guides that send you to Developer mode describe menus ChatGPT has replaced.
 Steps checked on 18 November 2026; the current ones are kept at
 [postnext.io/ai-agents/chatgpt](https://postnext.io/ai-agents/chatgpt).

@@ -88,15 +88,17 @@ channel appears in `list_connected_accounts` afterwards.
 ### `create_post_draft`
 
 Mutating. Consumes 1 AI credit. Creates a new draft post for one platform.
-Requires `platform` and `content` (a single string, 1 to 2,200
-characters). Optional: `mediaUrls` (up to 10), `channelName` or
+Requires `platform` and either `content` (one string, checked against
+the platform's own limit) or, for X and Threads, `threadParts` (2 to 25
+strings, one per post in order), which is saved as a real thread so each
+post is published as its own reply (each post must fit the platform
+limit: X 280, or 25,000 for a paid X account; Threads 500). Optional: `mediaUrls` (up to 10), `channelName` or
 `providerId` to pick the account, `clientRequestId` for idempotent retries
 within 5 minutes, and `instagramTrialReel` (`auto` or `manual`, Instagram
 single-video drafts only). When several accounts are connected on the
 platform and none is named, the call fails with
-`channel_resolution_failed` and lists the available handles. There is no
-separate thread type: one call creates one draft. Drafts are not
-auto-published. Returns `postId` and `dashboardUrl`.
+`channel_resolution_failed` and lists the available handles. One call
+creates one draft. Drafts are not auto-published. Returns `postId` and `dashboardUrl`.
 
 ### `update_post_draft`
 
@@ -280,8 +282,9 @@ with text only: `Input validation error: Invalid arguments for tool
 `Error: post not found` or `Error: <tool_name> failed`.
 
 Rate limits are enforced before the MCP layer: 60 requests per 2
-minutes per IP (checked before authentication, so it applies to every
-request), then 300 requests per 2 minutes per token. Over a limit you get
+minutes per IP for requests without a valid token (a request that passes
+sign-in is not counted against it), then 300 requests per 2 minutes per
+token. Over a limit you get
 HTTP 429 with a JSON-RPC error `{"code": -32002, ...}` and the standard
 `RateLimit-*` headers.
 

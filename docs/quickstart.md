@@ -1,24 +1,31 @@
 # Quickstart
 
-Connect [Claude](https://claude.ai) to your [PostNext](https://postnext.io)
-account in 60 seconds. After this guide you'll be able to schedule posts,
-draft posts, and audit your queue from inside a Claude conversation.
+Connect your AI assistant (Claude, ChatGPT, Cursor, Codex and others) to
+your [PostNext](https://postnext.io) account in a few minutes. After this
+guide you'll be able to draft posts, schedule them and audit your queue from
+inside a chat, your editor or your terminal.
 
 ## Prerequisites
 
-- A PostNext account. Sign up free at [postnext.io](https://postnext.io)
+- A PostNext account. Sign up at [postnext.io](https://postnext.io) and
+  finish the plan step in the web app: a 7-day free trial (it asks for a card)
+  or **Continue with Free**. Until then your assistant can draft but not
+  schedule
+- At least one social account connected in PostNext (or ask your assistant
+  for a connect link once it is set up)
 - One of:
   - **Claude Desktop** (Mac, Windows): one-click link, or add it as a connector
   - **Claude Code**: one CLI line, no config file
   - **claude.ai** web: add it as a custom connector
   - **Cursor** or **Codex**: one entry in their MCP config
   - **ChatGPT**: a custom MCP server added from Plugins
-  - Any other MCP-aware client: for programmatic use with an API key
+  - Any other MCP client: the same URL with OAuth (see
+    [postnext.io/ai-agents](https://postnext.io/ai-agents))
+  - Your own scripts: an API key
 
-> Client setup steps are dated, not evergreen. Most steps below were checked
-> against each vendor's own documentation on **2026-10-06**; the ChatGPT,
-> Claude Code and Codex steps were updated on **2026-11-26** to match the
-> postnext.io guides checked on 18 November 2026. Vendor menus move. The
+> Client setup steps are dated, not evergreen. The steps below were matched
+> on **2026-11-26** to the postnext.io guides, which were checked against
+> each vendor's own documentation on **2026-11-18**. Vendor menus move. The
 > per-client guides at [postnext.io/ai-agents](https://postnext.io/ai-agents)
 > are the ones kept current.
 
@@ -48,8 +55,8 @@ in `claude_desktop_config.json`. That file only starts local servers, and a
 2. Click **+ Add**, then **Add custom connector**
 3. Name it `PostNext` and paste `https://mcp.postnext.io/api`, then
    **Continue**
-4. Keep OAuth as the sign-in method and click **Add**
-5. Approve the PostNext sign-in when Claude asks for it
+4. Keep the options marked Detected and click **Add**
+5. Select **Connect** and approve the PostNext sign-in
 
 On a Team or Enterprise plan, an owner adds the connector once under
 **Organization settings** → **Connectors**, and each member then clicks
@@ -130,20 +137,21 @@ guides that send you to Developer mode describe menus ChatGPT has replaced.
 Steps checked on 18 November 2026; the current ones are kept at
 [postnext.io/ai-agents/chatgpt](https://postnext.io/ai-agents/chatgpt).
 
-## Option H: Programmatic / non-Claude clients
+## Option H: Your own scripts and agents (API key)
 
-For your own scripts, agents, or non-Claude MCP clients that don't do OAuth:
+For your own scripts and agents, or any client that can't do OAuth:
 
 1. Generate an API key at
    [postnext.io/account/api-keys](https://postnext.io/account/api-keys)
-2. Pass it as `Authorization: Bearer apikey_<uuid>` on every request
+2. Send it to `https://mcp.postnext.io/api` as
+   `Authorization: Bearer apikey_<uuid>` on every request
 3. Use the standard MCP `initialize` → `tools/list` → `tools/call` flow
 
 API keys don't expire automatically. Revoke any time from the dashboard.
 
 ## First conversation
 
-After connecting, paste any of these into Claude:
+After connecting, paste any of these into your assistant:
 
 ```
 What's scheduled for the next 7 days?
@@ -161,7 +169,7 @@ Draft a post about <topic> in my brand voice.
 Plan next week's posts across all my channels.
 ```
 
-Claude will use [tools](tools.md), [resources](resources.md), and
+Your assistant will use [tools](tools.md), [resources](resources.md), and
 [prompts](prompts.md) as needed. You don't have to know which.
 
 ## Troubleshooting
@@ -191,9 +199,13 @@ Claude will use [tools](tools.md), [resources](resources.md), and
 
 ### "Upgrade required" / "Limit exceeded"
 
-- The Free plan includes 10 posts, 10 AI credits, 1 connected channel and
-  10 MB of storage a month. Creating, scheduling and uploading work on Free
-  until those run out
+- The Free plan includes 10 posts and 10 AI credits a month, 1 connected
+  channel and 10 MB of storage. Each saved draft uses 1 AI credit. Creating,
+  scheduling and uploading work on Free until those run out
+- "Posts can be scheduled once this account has chosen a plan in the
+  PostNext web app" (`limit_exceeded`, kind `trial_required`): a new account
+  has not finished the plan step yet. Open the PostNext web app and start the
+  free trial or choose **Continue with Free**, then ask again
 - Four tools need a paid plan: `get_account_health`, `get_best_time_to_post`,
   `update_post_draft` and `update_brand_profile`
 - The error includes a `freeAlternative` hint (often a read-only tool that
@@ -209,8 +221,8 @@ Claude will use [tools](tools.md), [resources](resources.md), and
 
 - [Tool reference](tools.md): all 25 tools, what they do, what they
   return
-- [Resource reference](resources.md): read-on-demand context Claude
-  pulls automatically
+- [Resource reference](resources.md): read-on-demand context your
+  assistant pulls automatically
 - [Prompt reference](prompts.md): named multi-step workflows you can
   invoke directly
 - [Recipes](../recipes): full worked examples for common tasks

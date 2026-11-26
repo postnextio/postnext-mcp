@@ -3,9 +3,8 @@
 
 // Prints the PostNext MCP connection config for a given client.
 //
-// The snippets here are the same strings the /ai-agents/<client> pages on
-// postnext.io render, and the same ones the README and docs/quickstart.md
-// carry. Three copies is two too many, so if one changes, change all three:
+// The snippets here follow the /ai-agents/<client> pages on postnext.io,
+// and the README and docs/quickstart.md carry the same steps. Three copies is two too many, so if one changes, change all three:
 // postnextio config/ai-agents.js is the source its own test pins.
 
 var URL = 'https://mcp.postnext.io/api';
@@ -40,8 +39,10 @@ var CLIENTS = {
   },
   chatgpt: {
     title: 'ChatGPT',
-    how: 'Plugins > + > Add custom MCP server. Name it PostNext, paste this URL, choose OAuth, tick I understand and want to continue, then Create as a plugin and install it:',
+    how: 'In ChatGPT on the web: Plugins > + > Add custom MCP server. Name it PostNext and paste this URL under Connection:',
     body: URL,
+    after: 'Choose OAuth, tick I understand and want to continue, select Create as a plugin and install it.\n' +
+      'In a chat, type @ and pick PostNext.',
     note: 'Write tools need ChatGPT Business, Enterprise or Edu; Pro connects with read access.\n' +
       'In a Business workspace, an admin or owner creates the plugin.\n' +
       'Current steps: https://postnext.io/ai-agents/chatgpt',
@@ -54,8 +55,9 @@ function print(key) {
   console.log('\n' + c.title + '\n');
   console.log(c.how + '\n');
   console.log(c.body + '\n');
-  if (c.note) console.log(c.note + '\n');
+  if (c.after) console.log(c.after + '\n');
   console.log((c.signin || 'First tool call opens the PostNext sign-in in a browser. Approve it once.') + '\n');
+  if (c.note) console.log(c.note + '\n');
 }
 
 function usage() {
@@ -67,6 +69,7 @@ function usage() {
   console.log('\n  npx postnext-mcp --url     print just the server URL');
   console.log('  npx postnext-mcp --json    print the mcpServers block (Cursor and other url-based clients)\n');
   console.log('You need a PostNext account (free): https://postnext.io');
+  console.log('Finish the plan step in the web app (free trial or Continue with Free) before scheduling.');
   console.log('Docs: https://postnext.io/mcp  |  https://github.com/postnextio/postnext-mcp\n');
   console.log('This package is a setup helper. The MCP server itself is hosted;');
   console.log('there is nothing to run locally.\n');

@@ -64,9 +64,9 @@ Use the weekly-plan prompt.
    say "create it", with a stable `clientRequestId` so retries are
    idempotent
 
-The server has no separate thread type. `create_post_draft` takes a
-single `content` string of up to 2,200 characters, so the whole numbered
-thread is saved as the text of one draft per platform. Review it in the
+The prompt tells the assistant to pass the posts to `create_post_draft`
+as `threadParts`, one string per post, so the draft is saved as a real
+thread and each post is published as its own reply. Review it in the
 draft's `dashboardUrl` before scheduling.
 
 The prompt does not fetch URLs itself. If you pass a URL, whether Claude

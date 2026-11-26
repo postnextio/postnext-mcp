@@ -43,12 +43,12 @@ prompt](https://postnext.io/mcp/docs#prompts) that handles the workflow.
    edits, or kill it
 7. **Calls `create_post_draft`** once per platform after you say
    "create it", with `platform: "twitter"` (or `threads`), the thread as
-   `content`, and a stable `clientRequestId`
+   `threadParts` (one string per post), and a stable `clientRequestId`
 
-There is no separate thread type in the MCP. `content` is a single
-string of up to 2,200 characters, so the whole numbered thread is saved
-as the text of one draft. Keep the total under that cap, and open the
-returned `dashboardUrl` to check it before you schedule. Nothing
+The thread is saved as a real thread: each post goes out as its own
+reply, and each must fit the platform limit (X 280, or 25,000 for a paid
+X account; Threads 500). Open the returned `dashboardUrl` to check it
+before you schedule. Nothing
 publishes until you schedule it.
 
 ## Expected output shape
@@ -97,9 +97,9 @@ Review at https://app.postnext.io/publish/6a0c4117bc2e3849b34c74d7
 ## Tips
 
 - One draft is one `create_post_draft` call and costs 1 AI credit,
-  however many numbered posts it contains
-- The draft's `content` is capped at 2,200 characters. A 7-post thread
-  at 280 characters each fits; long Premium-length posts will not
+  however many posts the thread contains (2 to 25)
+- Each post is checked on its own against the platform limit, so
+  Premium-length X posts work if your X account is paid
 - The first post does most of the work on X. If you don't like the
   hook, ask Claude to redraft just post 1: "rewrite post 1 with a
   contrarian framing"

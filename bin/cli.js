@@ -14,7 +14,7 @@ var CLIENTS = {
   'claude-code': {
     title: 'Claude Code',
     how: 'Run this once, from a terminal:',
-    body: 'claude mcp add --transport http postnext ' + URL,
+    body: 'claude mcp add --transport http --scope user postnext ' + URL,
     note: 'Available in every session from then on. Check it with: claude mcp list'
   },
   'claude-desktop': {
@@ -38,9 +38,10 @@ var CLIENTS = {
   },
   chatgpt: {
     title: 'ChatGPT',
-    how: 'Settings > Apps > Advanced settings > Developer mode, then Create a plugin with this URL and Authentication set to OAuth:',
+    how: 'Plugins > + > Add custom MCP server. Name it PostNext, choose OAuth, paste this URL, then Create as a plugin and install it:',
     body: URL,
-    note: 'Before the July 2026 rename this lived under Connectors.'
+    note: 'Write tools need ChatGPT Business, Enterprise or Edu; Pro connects with read access.\n' +
+      'Current steps: https://postnext.io/ai-agents/chatgpt'
   }
 };
 

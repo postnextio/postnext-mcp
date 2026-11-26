@@ -12,7 +12,7 @@ draft posts, and audit your queue from inside a Claude conversation.
   - **Claude Code**: one CLI line, no config file
   - **claude.ai** web: add it as a custom connector
   - **Cursor** or **Codex**: one entry in their MCP config
-  - **ChatGPT**: a custom app in Developer mode
+  - **ChatGPT**: a custom MCP server added from Plugins
   - Any other MCP-aware client: for programmatic use with an API key
 
 > Client setup steps are dated, not evergreen. The steps below were last
@@ -58,7 +58,7 @@ On a Team or Enterprise plan, an owner adds the connector once under
 Register PostNext as an HTTP MCP server from a terminal:
 
 ```bash
-claude mcp add --transport http postnext https://mcp.postnext.io/api
+claude mcp add --transport http --scope user postnext https://mcp.postnext.io/api
 ```
 
 That is the whole setup. There is no config file to edit, and the server is
@@ -115,10 +115,18 @@ set `experimental_use_rmcp_client = true` under `[features]`, or upgrade.
 
 ## Option G: ChatGPT
 
-Turn on **Developer mode** in ChatGPT's Apps settings, create a new app with
-the URL `https://mcp.postnext.io/api`, and choose **OAuth** as the
-authentication. ChatGPT then lists the PostNext tools and asks you to sign in.
-`npx postnext-mcp chatgpt` prints the current menu path.
+1. In ChatGPT on the web, open **Plugins**, select **+** and choose **Add
+   custom MCP server**.
+2. Name it PostNext, paste `https://mcp.postnext.io/api` under Connection,
+   choose **OAuth** and confirm.
+3. Select **Create as a plugin**, install it, and sign in to PostNext when
+   ChatGPT asks. In a chat, type **@** and pick PostNext.
+
+OpenAI says full MCP access, with write tools, is on ChatGPT Business,
+Enterprise and Edu; Pro can connect custom servers with read access. Older
+guides that send you to Developer mode describe menus ChatGPT has replaced.
+Steps checked on 18 November 2026; the current ones are kept at
+[postnext.io/ai-agents/chatgpt](https://postnext.io/ai-agents/chatgpt).
 
 ## Option H: Programmatic / non-Claude clients
 

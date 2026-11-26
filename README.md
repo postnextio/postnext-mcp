@@ -1,90 +1,114 @@
-# PostNext MCP
+# Social media MCP for Claude, ChatGPT and any AI agent
 
-Connect [Claude](https://claude.ai), Claude Code, Cursor, Codex or any other
-MCP-aware client to [PostNext](https://postnext.io) via the Model Context
-Protocol. Schedule posts, draft threads, audit your queue, and generate
-content across X, Instagram, LinkedIn, Threads, and TikTok, all from inside a
-chat, your editor, or your terminal.
+![PostNext social media MCP: ask Claude or ChatGPT to plan 3 posts, and the drafts appear in PostNext for Instagram, LinkedIn and X](assets/hero.png)
 
-The MCP server is hosted and free to connect. You only need a PostNext account.
+**PostNext MCP is a hosted social media MCP server.** Connect it once to
+Claude, ChatGPT, Cursor, Codex or any other AI agent, then ask in plain
+words: "plan next week's posts", "what's scheduled?", "turn this article
+into a thread". Your assistant writes the posts, schedules them on X,
+Instagram, LinkedIn, Threads and TikTok, and checks how they did.
+
+[![npm](https://img.shields.io/npm/v/postnext-mcp?label=npm&color=1b1b1b)](https://www.npmjs.com/package/postnext-mcp)
+[![MCP Registry](https://img.shields.io/badge/MCP%20Registry-io.postnext%2Fpostnext-81ff3c)](https://postnext.io/mcp)
+[![License: MIT](https://img.shields.io/badge/license-MIT-1b1b1b)](LICENSE)
+
+[What is it](https://postnext.io/mcp) ·
+[Connect in one click](https://postnext.io/mcp/connect) ·
+[Full docs](https://postnext.io/mcp/docs) ·
+[For developers](https://postnext.io/for/developers) ·
+[Pricing](https://postnext.io/pricing)
 
 - **Server URL**: `https://mcp.postnext.io/api`
-- **Status**: production, [v1.5.1](#versioning)
+- **Sign-in**: OAuth (no API key needed in chat apps)
+- **Cost**: included in every PostNext plan, Free plan too
+- **Status**: production, [v1.5.1](#versions-and-endpoints), listed in the
+  official MCP Registry as `io.postnext/postnext`
 - **Tools**: 25 · **Resources**: 4 · **Prompts**: 4
-
-> **Prefer a portable, no-connector setup?** The
-> [`postnext-social-manager`](https://github.com/postnextio/postnext-social-manager)
-> skill drives the same PostNext account over the public REST API with an API
-> key. Works in Claude Code, scripts, or any agent, with no MCP connector to
-> configure.
 
 ---
 
-## What is this?
+## What is a social media MCP?
 
-PostNext exposes its social media management API as a [Model Context
-Protocol](https://modelcontextprotocol.io) server. When you connect it to
-Claude (desktop, web, or any MCP-aware client), Claude can:
+MCP (Model Context Protocol) is an open standard that lets an AI assistant
+use other apps. A **social media MCP** is an MCP server for your social
+accounts: once it is connected, your assistant can write, schedule and
+review posts for you, instead of only suggesting text you copy and paste.
 
-- See your connected social channels and current team
-- Read your brand profile (voice, themes, hashtags) so generated posts sound
-  like you
-- Draft, edit, schedule, and cancel posts
-- Audit your scheduled queue for duplicates, overload, or gaps
-- Look up post metrics and account health
+PostNext is the social media scheduler behind this one. Every post your
+assistant creates lands in your [PostNext](https://postnext.io) calendar,
+where you can check it, change it or cancel it before it goes out.
 
-All actions happen against your PostNext account through your own auth token.
-PostNext sees what you authorize, nothing more.
+![How the PostNext social media MCP works: your AI assistant (Claude, ChatGPT, Cursor, Claude Code, Codex or any MCP client) connects to the PostNext MCP server at mcp.postnext.io/api, which publishes to X, Instagram, LinkedIn, Threads and TikTok](assets/how-it-works.png)
 
-## Quick start
+1. **You ask** your assistant in plain words.
+2. **Your assistant uses PostNext**: it reads your channels and brand voice,
+   writes drafts and schedules them.
+3. **PostNext posts** at the time you pick, through each network's official
+   API, even after you close the chat.
 
-You need a PostNext account. Sign up free at
-[postnext.io](https://postnext.io). No API key is needed for the connector
-flows below; OAuth handles auth.
+More on how it works: [postnext.io/mcp](https://postnext.io/mcp).
 
-> Client setup steps are dated, not evergreen. The steps below were last
-> checked against each vendor's own documentation on **2026-10-06**. Vendor
-> menus move. The per-client pages at [postnext.io/mcp](https://postnext.io/mcp)
-> are the ones kept current.
->
-> `npx postnext-mcp <client>` prints the config for `claude-code`,
-> `claude-desktop`, `cursor`, `codex` or `chatgpt`. It is a setup helper only;
-> the server is hosted, so there is nothing to run locally.
+## What you can ask
 
-### Claude Desktop (one-click)
+![Example chat: the assistant calls list_scheduled_posts, lists 3 posts for the week and spots that Wednesday is empty, then calls create_post_draft and asks before scheduling](assets/chat-example.png)
 
-Visit [postnext.io/mcp/connect](https://postnext.io/mcp/connect) and click
-**Open in Claude Desktop**. The deep link configures the MCP server for you
-and walks you through the OAuth grant.
+Copy any of these into your assistant once PostNext is connected:
 
-### Claude Desktop and claude.ai (connector)
+- "What's scheduled for this week?"
+- "Plan five posts for next week from this article. Show me the plan first,
+  then save them as drafts."
+- "Turn this blog post into an X thread."
+- "Audit my queue for the next 14 days. Flag duplicates and gaps."
+- "Which of my channels need reconnecting?"
+- "Write a LinkedIn post about our new pricing page and schedule it for
+  Tuesday at 09:00."
 
-PostNext is a remote server, so it is added as a custom connector, not in
-`claude_desktop_config.json` (that file only starts local servers, and a `url`
-entry there does not connect).
+Longer worked examples are in [recipes](#recipes).
 
-In Claude (desktop or [claude.ai](https://claude.ai)), go to **Customize** →
-**Connectors** → **+ Add** → **Add custom connector**, paste
-`https://mcp.postnext.io/api`, keep OAuth, and click **Add**. Approve the
-PostNext sign-in when asked. On Team and Enterprise plans an owner adds it
-once under **Organization settings** → **Connectors**, then members click
-**Connect**.
+## Connect in one minute
+
+You need a free PostNext account: [sign up at postnext.io](https://postnext.io).
+Then pick your assistant. Each one has a full guide on postnext.io, and those
+guides are the ones kept current: the steps below match them as checked
+against each vendor's own documentation on 18 November 2026. Menus move.
+
+### Claude (desktop app and claude.ai)
+
+In Claude, open **Customize** → **Connectors** → **Add** → **Add custom
+connector**, paste `https://mcp.postnext.io/api`, keep OAuth, and approve the
+PostNext sign-in. On Team and Enterprise plans an owner adds it once under
+**Organization settings** → **Connectors**, then members click **Connect**.
+
+On Claude Desktop you can also use the one-click link at
+[postnext.io/mcp/connect](https://postnext.io/mcp/connect).
+Full guide: [PostNext for Claude](https://postnext.io/ai-agents/claude).
+
+### ChatGPT
+
+1. In ChatGPT on the web, open **Plugins**, select **+** and choose **Add
+   custom MCP server**.
+2. Name it PostNext, paste `https://mcp.postnext.io/api` under Connection and
+   choose **OAuth**.
+3. Select **Create as a plugin**, install it, and sign in to PostNext when
+   ChatGPT asks. In a chat, type **@** and pick PostNext.
+
+OpenAI says full MCP access, with write tools, is on ChatGPT Business,
+Enterprise and Edu, and Pro can connect custom servers with read access.
+Full guide: [PostNext for ChatGPT](https://postnext.io/ai-agents/chatgpt).
 
 ### Claude Code
 
-Register PostNext as an HTTP MCP server once, from a terminal:
-
 ```bash
-claude mcp add --transport http postnext https://mcp.postnext.io/api
+claude mcp add --transport http --scope user postnext https://mcp.postnext.io/api
 ```
 
-It is available in every Claude Code session from then on. The first PostNext
-tool call opens the OAuth grant in a browser; approve it once.
+`--scope user` makes PostNext available in every project. The first PostNext
+tool call opens the sign-in in your browser; approve it once.
+Full guide: [PostNext for Claude Code](https://postnext.io/ai-agents/claude-code).
 
 ### Cursor
 
-Open Settings → MCP and add a global server, or edit `~/.cursor/mcp.json`
-directly (the per-project file is `.cursor/mcp.json`):
+Add this to `~/.cursor/mcp.json` (or `.cursor/mcp.json` for one project):
 
 ```json
 {
@@ -96,75 +120,136 @@ directly (the per-project file is `.cursor/mcp.json`):
 }
 ```
 
-Save, approve the sign-in on first use, and the tools are available to the
-agent in any chat.
+Full guide: [PostNext for Cursor](https://postnext.io/ai-agents/cursor).
 
 ### Codex
 
-Codex reads MCP servers from `config.toml` in your `.codex` folder. Add:
-
-```toml
-[mcp_servers.postnext]
-url = "https://mcp.postnext.io/api"
+```bash
+codex mcp add postnext --url https://mcp.postnext.io/api
+codex mcp login postnext
 ```
 
-Codex picks the HTTP transport automatically when an entry has a `url` instead
-of a `command`. On an older Codex that only reads stdio servers, also set
-`experimental_use_rmcp_client = true` under `[features]`, or upgrade.
+Or add `[mcp_servers.postnext]` with `url = "https://mcp.postnext.io/api"` to
+`config.toml` in your `.codex` folder.
+Full guide: [PostNext for Codex](https://postnext.io/ai-agents/codex).
 
-### ChatGPT
+### Other assistants
 
-Turn on **Developer mode** in ChatGPT's Apps settings, create a new app with
-the URL `https://mcp.postnext.io/api`, and choose **OAuth** as the
-authentication. `npx postnext-mcp chatgpt` prints the current menu path.
+GitHub Copilot, Windsurf, Gemini, Manus, Perplexity and more have their own
+guides in the [AI agents directory](https://postnext.io/ai-agents). Any client
+that can add a remote MCP server works with the same URL.
 
-### Programmatic clients (API key)
+`npx postnext-mcp <client>` prints the config for `claude-code`,
+`claude-desktop`, `cursor`, `codex` or `chatgpt`. It is a setup helper only:
+the server is hosted, so there is nothing to install or run.
 
-For scripts, agents, or non-Claude clients that don't do OAuth, generate
-an API key at
-[postnext.io/account/api-keys](https://postnext.io/account/api-keys) and pass
-it as `Authorization: Bearer apikey_<uuid>` on every request.
+### Your own scripts and agents (API key)
 
-### Try it
+For code that can't do OAuth, create an API key at
+[postnext.io/account/api-keys](https://postnext.io/account/api-keys) and send
+it as `Authorization: Bearer apikey_<uuid>` on every request. Building your
+own integration? See [PostNext for developers](https://postnext.io/for/developers).
 
-```
-You: What's scheduled for this week?
-Claude: [calls list_scheduled_posts, summarizes]
+## Supported social networks
 
-You: Draft a LinkedIn post about the new MCP launch.
-Claude: [reads postnext://brand-profiles/active for voice,
-         shows the draft, then calls create_post_draft once you approve]
+| Network | What your assistant can do | Guide |
+|---|---|---|
+| **X (Twitter)** | Write, schedule and check posts | [X MCP server](https://postnext.io/mcp/x) |
+| **Instagram** | Write captions and schedule posts with your images and videos | [Instagram MCP server](https://postnext.io/mcp/instagram) |
+| **LinkedIn** | Write, schedule and check posts | [LinkedIn MCP server](https://postnext.io/mcp/linkedin) |
+| **Threads** | Write, schedule and check posts | [Threads MCP server](https://postnext.io/mcp/threads) |
+| **TikTok** | Write captions and schedule your videos | [TikTok MCP server](https://postnext.io/mcp/tiktok) |
 
-You: Audit my queue for the next 14 days.
-Claude: [invokes the audit-queue prompt, flags duplicates and gaps]
-```
+These five can be connected and posted to through the MCP. The PostNext app
+itself supports more [channels](https://postnext.io/channels).
 
-## What you can do
+## What it can do: all 25 tools
 
-| Category | Tools |
-|---|---|
-| **Account + plan** | `get_plan`, `get_plan_limits`, `get_account_health` |
-| **Teams** | `list_teams`, `set_current_team` |
-| **Channels** | `list_connected_accounts`, `connect_channel` |
-| **Drafts** | `create_post_draft`, `update_post_draft`, `list_drafts`, `delete_draft` |
-| **Schedule** | `schedule_post`, `cancel_scheduled_post`, `list_scheduled_posts`, `get_publish_status` |
-| **Posts** | `get_post`, `search_posts`, `get_post_metrics` |
-| **Analytics** | `get_best_time_to_post`, `get_channel_analytics` |
-| **Media** | `upload_asset`, `request_asset_upload`, `import_chat_file` |
-| **Brand** | `update_brand_profile` |
-| **Meta** | `search_tools` |
+| Area | In plain words | Tools |
+|---|---|---|
+| **Account + plan** | See your plan, what you have left this month and account health | `get_plan`, `get_plan_limits`, `get_account_health` |
+| **Teams** | List your teams and switch between them | `list_teams`, `set_current_team` |
+| **Channels** | See connected accounts and get a link to connect a new one | `list_connected_accounts`, `connect_channel` |
+| **Drafts** | Write, edit, list and delete drafts | `create_post_draft`, `update_post_draft`, `list_drafts`, `delete_draft` |
+| **Schedule** | Schedule a post, cancel it, see the queue and check if it went out | `schedule_post`, `cancel_scheduled_post`, `list_scheduled_posts`, `get_publish_status` |
+| **Posts** | Find past posts and read their results | `get_post`, `search_posts`, `get_post_metrics` |
+| **Analytics** | Best time to post and results per channel | `get_best_time_to_post`, `get_channel_analytics` |
+| **Media** | Add images and videos to your library | `upload_asset`, `request_asset_upload`, `import_chat_file` |
+| **Brand** | Save your brand voice, themes and hashtags | `update_brand_profile` |
+| **Meta** | Find the right tool for a job | `search_tools` |
 
 Four tools need a paid plan: `get_account_health`, `get_best_time_to_post`,
-`update_post_draft` and `update_brand_profile`. Everything else works on the Free plan.
-Tools that create, schedule, connect or upload are limited by your plan's
-monthly quota; Free includes 10 posts, 10 AI credits, 1 connected channel and
-10 MB of storage. See [postnext.io/pricing](https://postnext.io/pricing) for
-current limits.
+`update_post_draft` and `update_brand_profile`. Everything else works on the
+Free plan, within its monthly limits: 10 posts, 10 AI credits, 1 connected
+channel and 10 MB of storage. See [postnext.io/pricing](https://postnext.io/pricing)
+for current limits.
 
-## Resources
+Every tool, what it returns and its errors: [docs/tools.md](docs/tools.md)
+or [postnext.io/mcp/docs](https://postnext.io/mcp/docs).
 
-MCP resources are read-on-demand context pulls. Claude reads these to ground
-its replies without re-asking you.
+## MCP or API: which one do I need?
+
+| You want to | Use |
+|---|---|
+| Ask Claude, ChatGPT or another assistant to handle your posts | This MCP server: [postnext.io/mcp](https://postnext.io/mcp) |
+| Post from your own app, script or backend | The PostNext REST API: [postnext.io/for/developers](https://postnext.io/for/developers) |
+| Give an agent a ready-made skill, with no connector to set up | [`postnext-social-manager`](https://github.com/postnextio/postnext-social-manager), which uses the REST API with an API key |
+
+## FAQ
+
+### What is a social media MCP server?
+
+An MCP server that connects an AI assistant to your social media accounts.
+With the PostNext social media MCP, Claude, ChatGPT or any MCP client can
+write, schedule and review your posts. [Read more](https://postnext.io/mcp).
+
+### Which AI assistants work with PostNext?
+
+Claude, Claude Code, ChatGPT, Codex, Cursor, GitHub Copilot, Windsurf, Gemini
+and any other client that can add a remote MCP server. See the
+[AI agents directory](https://postnext.io/ai-agents) for each setup.
+
+### Which social networks does it post to?
+
+X (Twitter), Instagram, LinkedIn, Threads and TikTok.
+[See the networks](#supported-social-networks).
+
+### Is it free?
+
+Yes. MCP access is included in every PostNext plan, including Free (10 posts
+and 10 AI credits a month, 1 channel). Four tools need a paid plan.
+[See pricing](https://postnext.io/pricing).
+
+### Can ChatGPT post to social media with PostNext?
+
+Yes. Add PostNext as a custom MCP server from ChatGPT's Plugins page.
+OpenAI says write tools need ChatGPT Business, Enterprise or Edu.
+[ChatGPT setup guide](https://postnext.io/ai-agents/chatgpt).
+
+### Will my assistant post without asking me?
+
+It can schedule a post for a time you choose, and PostNext publishes it then.
+Most AI clients ask you to confirm each action, the built-in prompts save
+drafts only after you confirm, and every scheduled post stays in your
+PostNext calendar, where you can cancel it until it goes out.
+
+### Do I need an API key?
+
+Not in chat apps: Claude, ChatGPT, Cursor and the others sign in with OAuth.
+Use an API key only for your own scripts.
+[PostNext for developers](https://postnext.io/for/developers).
+
+### How do I remove access?
+
+Disconnect PostNext in your AI client's settings, or revoke the token from
+your PostNext account at any time.
+
+## Reference
+
+### Resources
+
+Context your assistant can read on demand, so it doesn't have to ask you
+again. Details: [docs/resources.md](docs/resources.md).
 
 | URI | What it returns |
 |---|---|
@@ -173,9 +258,9 @@ its replies without re-asking you.
 | `postnext://channels/connected` | All connected social handles for the active team |
 | `postnext://brand-profiles/active` | Brand voice, themes, hashtags |
 
-## Prompts (named workflows)
+### Prompts (ready-made workflows)
 
-Pre-built multi-step prompts you can invoke from any MCP client:
+Details: [docs/prompts.md](docs/prompts.md).
 
 | Name | What it does |
 |---|---|
@@ -184,7 +269,20 @@ Pre-built multi-step prompts you can invoke from any MCP client:
 | `audit-queue` | Walks the next N days (1 to 30, default 7) of scheduled posts and flags duplicates, overload and gaps. Read-only |
 | `channel-sweep` | Lists connected and missing channels, flags stale ones (not synced for 7+ days) and suggests what to connect. Asks before creating any sign-in link |
 
-## Versioning
+### Recipes
+
+Paste-ready prompts with notes on what your assistant does behind the scenes:
+
+- [Weekly content plan](recipes/weekly-content-plan.md): plan next week's
+  posts across your connected channels, in your brand voice
+- [Draft a thread from an article](recipes/thread-from-article.md): turn
+  a URL into a 5 to 10 post thread
+- [Audit the scheduled queue](recipes/audit-scheduled-queue.md): a read-only
+  walk through your next N days, flagging duplicates, overload and gaps
+- [Channel-connection sweep](recipes/channel-connection-sweep.md): review
+  which channels are connected or stale, and connect the missing ones
+
+### Versions and endpoints
 
 | Endpoint | Status | Notes |
 |---|---|---|
@@ -194,12 +292,15 @@ Pre-built multi-step prompts you can invoke from any MCP client:
 The server reports `version: 1.5.1` on `initialize`. Breaking changes are
 versioned; non-breaking additions (new tools, resources) ship without a bump.
 
-## Auth + security
+### Auth and security
 
-- Two auth modes: **OAuth 2.0** (Claude Desktop and claude.ai connector flows)
-  or **API key** (`Bearer apikey_<uuid>`, manage at
+- Two ways to sign in: **OAuth 2.0** (chat apps and editors) or an **API
+  key** (`Bearer apikey_<uuid>`, managed at
   [postnext.io/account/api-keys](https://postnext.io/account/api-keys))
-- Tokens are revocable at any time from your account dashboard
+- Your assistant only sees what you authorize, and you can revoke a token
+  at any time from your account
+- No social media passwords are shared: PostNext posts through each
+  network's official API
 - Tool calls are rate-limited: 300 per 2 minutes per token once signed in,
   60 per 2 minutes per IP before sign-in. Live limits are in the
   `RateLimit-*` response headers, and a limited call gets HTTP 429
@@ -208,50 +309,37 @@ versioned; non-breaking additions (new tools, resources) ship without a bump.
 - Privacy: [postnext.io/privacy](https://postnext.io/privacy). The MCP data
   flow is detailed under "MCP Server and AI Assistant Access"
 
-## Recipes
+### Repo docs
 
-Worked examples for common workflows. Each is a paste-ready prompt with
-notes on what Claude does under the hood.
-
-- [Weekly content plan](recipes/weekly-content-plan.md): plan next week's
-  posts across your connected channels, grounded in your brand voice
-- [Draft a thread from an article](recipes/thread-from-article.md): turn
-  a URL into a 5 to 10 post thread in your voice
-- [Audit the scheduled queue](recipes/audit-scheduled-queue.md): a read-only
-  walk through your next N days, flagging duplicates, overload and gaps
-- [Channel-connection sweep](recipes/channel-connection-sweep.md): review
-  which channels are connected or stale, and connect the missing ones
-
-## Documentation
-
-Full hosted reference at [postnext.io/mcp/docs](https://postnext.io/mcp/docs).
-Repo-local reference (handy for offline / fork use):
+The hosted reference is at [postnext.io/mcp/docs](https://postnext.io/mcp/docs).
+The same material lives in this repo for offline or fork use:
 
 - [Quickstart](docs/quickstart.md): connect from Claude Desktop, claude.ai,
   Claude Code, Cursor, Codex, ChatGPT or a programmatic client
 - [Tool reference](docs/tools.md): all 25 tools, gating, error envelopes
-- [Resource reference](docs/resources.md): the 4 MCP resources Claude reads
-  on demand, with example payloads
-- [Prompt reference](docs/prompts.md): the 4 named workflows and their argument
-  schemas
+- [Resource reference](docs/resources.md): the 4 MCP resources, with example
+  payloads
+- [Prompt reference](docs/prompts.md): the 4 ready-made workflows and their
+  arguments
 
 ## License
 
-[MIT](LICENSE). Documentation and examples are free to copy, fork, and adapt.
+[MIT](LICENSE). Documentation and examples are free to copy, fork and adapt.
 The MCP server itself is hosted by PostNext; see
 [Terms of Service](https://postnext.io/terms).
 
 ## Links
 
-- Marketing site: [postnext.io](https://postnext.io)
+- Social media MCP: [postnext.io/mcp](https://postnext.io/mcp)
+- One-click connect: [postnext.io/mcp/connect](https://postnext.io/mcp/connect)
+- For developers (REST API): [postnext.io/for/developers](https://postnext.io/for/developers)
+- AI agents directory: [postnext.io/ai-agents](https://postnext.io/ai-agents)
 - Pricing: [postnext.io/pricing](https://postnext.io/pricing)
-- MCP landing: [postnext.io/mcp](https://postnext.io/mcp)
-- Account dashboard: [app.postnext.io](https://app.postnext.io)
-- API keys: [postnext.io/account/api-keys](https://postnext.io/account/api-keys)
+- PostNext app: [app.postnext.io](https://app.postnext.io)
 - Social-manager skill: [github.com/postnextio/postnext-social-manager](https://github.com/postnextio/postnext-social-manager)
 - Support: [contact@postnext.io](mailto:contact@postnext.io)
 
 ---
 
-Built by the team at [PostNext](https://postnext.io). Pull requests on these
-docs welcome.
+Built by the team at [PostNext](https://postnext.io), the social media
+the agentic social media scheduler. Pull requests on these docs welcome.
